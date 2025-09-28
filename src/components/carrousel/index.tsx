@@ -9,15 +9,15 @@ export function Carrousel(){
     return (
         <div >
           <Swiper
-           spaceBetween={10}
+           spaceBetween={35}
            slidesPerView={1.20} 
            onSlideChange={() => console.log('slide change')}
            onSwiper={(swiper) => console.log(swiper)}
           >
-           <SwiperSlide ><img src={camisa} alt="meninos com a camisa do time" /></SwiperSlide>
-           <SwiperSlide><img src={fotoMeninos} alt="foto dos meninos do time com o treinador" /></SwiperSlide>
-           <SwiperSlide><img src={fotoMeninos2} alt="foto dos meninos do time com o treinador" /></SwiperSlide>
-           <SwiperSlide><img src={jogo} alt="foto de dois meninos jogando" /></SwiperSlide>
+           <SwiperSlide ><img src={camisa} alt="meninos com a camisa do time" className='w-full' /></SwiperSlide>
+           <SwiperSlide><img src={fotoMeninos} alt="foto dos meninos do time com o treinador" className='w-full' /></SwiperSlide>
+           <SwiperSlide><img src={fotoMeninos2} alt="foto dos meninos do time com o treinador" className='w-full' /></SwiperSlide>
+           <SwiperSlide><img src={jogo} alt="foto de dois meninos jogando" className='w-full' /></SwiperSlide>
           </Swiper>
         </div>
     )

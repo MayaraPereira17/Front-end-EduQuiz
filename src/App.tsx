@@ -5,6 +5,10 @@ import raioImg from "./assets/raio.png"
 import { Carrousel } from "./components/carrousel"
 import meninoMexendoNoPcImg from "./assets/menino-mexendo-no-pc.png"
 import ondasLaranjaImg from "./assets/ondas-laranja.png"
+import formasGeometricas from "./assets/formas-geometricas.png"
+import logoWhite from "./assets/logo-white.png"
+import facebookLogoImg from "./assets/facebook-logo.png"
+import instagramLogoImg from "./assets/instagram-logo.png"
 
 function App() {
   return (
@@ -56,9 +60,9 @@ function App() {
         </div>
       </div>
 
-      <div className="bg-[#E9F4FF] grid grid-cols-2 gap-14 pb-14">
+      <div className="bg-[#E9F4FF] grid grid-cols-2 gap-14 pb-14 shadow-[0_4px_10px_0px_rgba(0,0,0,0.25)]">
         <div className="pt-4 ml-16">
-         <img src={meninoMexendoNoPcImg} alt="menino mexendo no pc" />
+         <img src={meninoMexendoNoPcImg} alt="menino mexendo no pc" className='w-full' />
         </div>
         <div className="mt-16">
          <h4 className="text-[#EF6C00] font-bold text-5xl mb-10">Projeto EduQuiz</h4>
@@ -71,6 +75,61 @@ function App() {
          </div>
         </div>
       </div>
+      
+      <div  className="w-full h-[51rem] bg-cover bg-center 
+      " style={{ backgroundImage: `url(${formasGeometricas})` }}>
+        <div className="flex flex-col justify-center flex-1 items-center h-full">
+          <div className="shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] flex flex-col pt-16 pb-16 px-20 rounded-4xl">
+            <h4 className=" text-base font-medium mb-3 text-center">Entrar na Plataforma</h4>
+            <p className="text-sm mb-14 text-center">Faça login para começar sua jornada educacional</p>
+
+            <form className="flex flex-col">
+              <label className="font-medium mb-1.5">Email</label>
+              <input className="bg-[#E6E6E6] pl-3 py-2.5 rounded-xl" type="email" required placeholder="seu@email.com"></input>
+
+              <label className="font-medium mt-4 mb-1.5">Senha</label>
+              <input className="bg-[#E6E6E6] pl-4 py-2.5 rounded-xl" type="password" required placeholder="***********"></input>
+
+              <button type="submit" className="font-bold mt-9 mb-12 bg-[#3182BD] text-white rounded-4xl py-2.5 px-24">Entrar</button>
+            </form>
+
+            <div className="flex gap-1">
+             <span className=" text-sm text-[#717171]">Não tem uma conta?</span>
+             <a className="font-medium text-sm">Cadastre-se aqui</a>  
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer className="bg-[#FFA726] py-32 px-28">
+        <div className="grid grid-cols-4 text-white">
+          <div className=" flex items-center gap-3">
+           <img src={logoWhite} alt="logo branca" />
+           <h4 className="font-bold text-4xl text-white">EduQuiz</h4>
+          </div>
+          
+          <div className="flex flex-col gap-3">
+           <span className=" text-white font-bold text-2xl">Contato</span>
+           <span className="font-medium">Telefone: (11) 9 9999-8888</span>
+           <span className="font-medium">E-mail: meninosdacaixa@gmail.com</span>
+          </div>
+
+          <div className="flex flex-col gap-3">
+           <span className="text-white font-bold text-2xl">Sobre</span>
+           <span className="font-medium">Projeto EduQuiz</span>
+           <span className="font-medium">Meninos da Caixa</span>
+          </div>
+
+          <div className="flex flex-col gap-3">
+           <span className="text-white font-bold text-2xl">Nos acompanhe nas redes</span>
+           <div className="flex gap-4">
+            <img src={facebookLogoImg} alt="logo facebook" />
+            <img src={instagramLogoImg} alt="logo instagram" />
+           </div>
+
+          </div>
+        </div>
+      </footer>
+
 
     </main>
     </>
