@@ -30,7 +30,7 @@ export function Dashboard() {
         </Tabs.List>
 
         <div className="flex gap-10">
-          <AvatarDemo />
+          <AvatarDemo isTeacher={false} />
           <button className="text-[#404040] text-sm">Sair</button>
         </div>
       </header>

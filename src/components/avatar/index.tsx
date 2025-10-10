@@ -1,7 +1,11 @@
 import * as Avatar from "@radix-ui/react-avatar";
 import ellipseImg from "../../assets/ellipse.png";
 
-export const AvatarDemo = () => (
+interface Props {
+  isTeacher: boolean;
+}
+
+export const AvatarDemo = ({ isTeacher }: Props) => (
   <div className="flex items-center gap-1.5 justify-center ">
     <div className="flex gap-5">
       {/* Avatar 1 */}
@@ -20,7 +24,9 @@ export const AvatarDemo = () => (
       </Avatar.Root>
     </div>
     <div className="flex flex-col">
-      <span className="text-xs font-bold">Lucas Ribeiro</span>
+      <span className="text-xs font-bold">
+        {isTeacher && "Prof"} Lucas Ribeiro
+      </span>
       <span className="text-xs">lucas.ribeiro@gmail.com</span>
     </div>
   </div>

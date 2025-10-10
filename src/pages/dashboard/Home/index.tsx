@@ -1,55 +1,11 @@
-import analyticsImg from "../../../assets/icons/analytics.svg";
 import trophyImg from "../../../assets/icons/trophy.svg";
-import riseImg from "../../../assets/icons/rise.svg";
-import bookImg from "../../../assets/icons/book-blue.svg";
-import starImg from "../../../assets/icons/star.svg";
 import playImg from "../../../assets/play.png";
-
-type IconKey = "analytics" | "trophy" | "rise" | "book" | "star";
+import { StudentStats } from "../../../components/studentStats";
+import { studentRatingsHome } from "../../../mocks/studentRatings";
 
 export function Home() {
-  const studentRatings: {
-    value: string | number;
-    description: string;
-    img: IconKey;
-  }[] = [
-    {
-      img: "book",
-      value: 24,
-      description: "Quizzes completos",
-    },
-    {
-      img: "analytics",
-      value: "78.5%",
-      description: "Média geral",
-    },
-    {
-      img: "trophy",
-      value: 24,
-      description: "Quizzes completos",
-    },
-    {
-      img: "rise",
-      value: 7,
-      description: "Sequência",
-    },
-    {
-      img: "star",
-      value: 1890,
-      description: "Pontos",
-    },
-  ];
-
-  const icons = {
-    analytics: analyticsImg,
-    trophy: trophyImg,
-    rise: riseImg,
-    book: bookImg,
-    star: starImg,
-  };
-
   return (
-    <div className="flex-1 h-full overflow-auto bg-[#C6DBEF] px-14">
+    <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-14">
       <div className="flex flex-col gap-4 pb-4 pt-9">
         <h4 className="font-bold text-5xl">Olá, Lucas!</h4>
         <span className="text-[#404040] text-sm">
@@ -59,20 +15,8 @@ export function Home() {
 
       {/* Primeira linha de graficos */}
       <div className="grid grid-cols-5 gap-7">
-        {studentRatings.map((item) => (
-          <div
-            className="flex flex-col items-center bg-white rounded-4xl py-8 gap-4"
-            key={item.description}
-          >
-            <div>
-              <img src={icons[item.img]} alt="" />
-            </div>
-
-            <div className="flex flex-col gap-1.5 items-center">
-              <span className="font-bold text-3xl">{item.value}</span>
-              <span className="text-sm text-[#404040]">{item.description}</span>
-            </div>
-          </div>
+        {studentRatingsHome.map((item) => (
+          <StudentStats item={item} />
         ))}
       </div>
 
