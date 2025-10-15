@@ -4,7 +4,9 @@ import { Header } from "../../components/header";
 import { TabsTrigger } from "../../components/tabsTrigger";
 
 import { useState } from "react";
-import { Home } from "./tabs/home";
+import { HomeCoach } from "./tabs/home";
+import { ProfileCoach } from "./tabs/profile";
+import { MyQuizzesCoach } from "./tabs/myQuizzes";
 
 export function Coach() {
   const [activeTab, setActiveTab] = useState("home");
@@ -16,23 +18,19 @@ export function Coach() {
     >
       <Header isTeacher>
         <TabsTrigger value="home">Início</TabsTrigger>
-        <TabsTrigger value="quiz">Quiz</TabsTrigger>
-        <TabsTrigger value="ranking">Turmas</TabsTrigger>
+        <TabsTrigger value="quiz">Meus Quizzes</TabsTrigger>
         <TabsTrigger value="profile">Perfil</TabsTrigger>
       </Header>
 
-      <div className="flex-1 ">
+      <div className="flex-1 overflow-auto">
         <Tabs.Content value="home" className="h-full overflow-auto">
-          <Home />
+          <HomeCoach />
         </Tabs.Content>
         <Tabs.Content value="quiz" className="h-full overflow-auto">
-          <span>aqqaq</span>
-        </Tabs.Content>
-        <Tabs.Content value="ranking" className="h-full overflow-auto">
-          3
+          <MyQuizzesCoach />
         </Tabs.Content>
         <Tabs.Content value="profile" className="h-full overflow-auto">
-          4
+          <ProfileCoach />
         </Tabs.Content>
       </div>
     </Tabs.Root>
