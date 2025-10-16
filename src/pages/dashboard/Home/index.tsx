@@ -2,12 +2,15 @@ import trophyImg from "../../../assets/icons/trophy.svg";
 import playImg from "../../../assets/play.png";
 import { StudentStats } from "../../../components/studentStats";
 import { studentRatingsHome } from "../../../mocks/studentRatings";
+import { useAuth } from "../../../hooks/userAuth";
 
 export function Home() {
+  const { user } = useAuth();
+  
   return (
     <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-14">
       <div className="flex flex-col gap-4 pb-4 pt-9">
-        <h4 className="font-bold text-5xl">Olá, Lucas!</h4>
+        <h4 className="font-bold text-5xl">Olá, {user?.firstName}!</h4>
         <span className="text-[#404040] text-sm">
           Continue aprendendo e melhorando sua pontuação.
         </span>
@@ -15,8 +18,8 @@ export function Home() {
 
       {/* Primeira linha de graficos */}
       <div className="grid grid-cols-5 gap-7">
-        {studentRatingsHome.map((item) => (
-          <StudentStats item={item} key={item.value} />
+        {studentRatingsHome.map((item, index) => (
+          <StudentStats item={item} key={`${item.img}-${index}`} />
         ))}
       </div>
 

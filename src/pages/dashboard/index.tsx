@@ -7,9 +7,18 @@ import { Home } from "./Home";
 import { Quiz } from "./Quiz";
 import { Ranking } from "./Ranking";
 import { Profile } from "./Profile";
+import { useAuth } from "../../hooks/userAuth";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState("home");
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <Tabs.Root
@@ -31,7 +40,12 @@ export function Dashboard() {
 
         <div className="flex gap-10">
           <AvatarDemo isTeacher={false} />
-          <button className="text-[#404040] text-sm">Sair</button>
+          <button 
+            onClick={handleLogout}
+            className="text-[#404040] text-sm hover:text-red-600 transition-colors"
+          >
+            Sair
+          </button>
         </div>
       </header>
 

@@ -1,7 +1,11 @@
 import { Tabs } from "./tabs";
 import settingsIcon from "../../../assets/icons/settings.svg";
 import { Avatar } from "../Ranking/avatarComponent";
+import { useAuth } from "../../../hooks/userAuth";
+
 export function Profile() {
+  const { user } = useAuth();
+  
   return (
     <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] ">
       <div className="flex justify-between pt-11">
@@ -18,9 +22,11 @@ export function Profile() {
           <Avatar className="h-28 w-28" />
 
           <div className="flex flex-col">
-            <span className="font-bold text-lg">Lucas Ribeiro</span>
+            <span className="font-bold text-lg">
+              {user?.firstName} {user?.lastName}
+            </span>
             <span className="font-normal text-sm text-[#404040]">
-              Lucas.ribeira@gmail.com
+              {user?.email}
             </span>
           </div>
         </div>

@@ -39,8 +39,8 @@ export interface UpdateProfileData {
 export interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: RegisterData) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ redirectPath: string }>;
+  register: (userData: RegisterData) => Promise<{ redirectPath: string }>;
   logout: () => void;
   updateProfile: (profileData: UpdateProfileData) => Promise<void>;
   isAuthenticated: boolean;

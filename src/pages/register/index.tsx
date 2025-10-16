@@ -138,12 +138,13 @@ export function Register() {
         registerData.dataNascimento = date.toISOString();
       }
 
-      await register(registerData);
+      const response = await register(registerData);
       setSuccess(true);
       
-      // Redirecionar após 2 segundos
+      // Redirecionar após 2 segundos para a tela correta baseada no role
       setTimeout(() => {
-        navigate("/dashboard");
+        const redirectPath = (response as any)?.redirectPath || "/dashboard";
+        navigate(redirectPath);
       }, 2000);
 
     } catch (error: any) {

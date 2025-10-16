@@ -21,28 +21,66 @@ export const authService: AuthService = {
       ConfirmPassword: userData.ConfirmPassword || userData.password
     };
     const response = await api.post('/api/auth/register', dataWithConfirmPassword);
+    
+    // Extrair dados do formato da API (assumindo mesmo formato do login)
+    if (response.data.data) {
+      const { token, user } = response.data.data;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      return { token, user };
+    }
+    
+    // Fallback para formato antigo
     return response.data;
   },
 
   login: async (email, password) => {
-    const response = await api.post('/api/auth/login', { email, password });
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data.user));
-    return response.data;
+    try {
+      const response = await api.post('/api/auth/login', { email, password });
+      
+      // Extrair dados do formato da API
+      const { token, user } = response.data.data;
+      
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      
+      // Retornar no formato esperado pelo frontend
+      return { token, user };
+    } catch (error) {
+      throw error;
+    }
   },
 
   getProfile: async () => {
     const response = await api.get('/api/auth/profile');
+    
+    // Se a resposta tem o formato com data
+    if (response.data.data) {
+      return response.data.data;
+    }
+    
     return response.data;
   },
 
   updateProfile: async (profileData) => {
     const response = await api.put('/api/auth/profile', profileData);
+    
+    // Se a resposta tem o formato com data
+    if (response.data.data) {
+      return response.data.data;
+    }
+    
     return response.data;
   },
 
   changePassword: async (currentPassword, newPassword) => {
     const response = await api.put('/api/auth/change-password', { currentPassword, newPassword });
+    
+    // Se a resposta tem o formato com data
+    if (response.data.data) {
+      return response.data.data;
+    }
+    
     return response.data;
   },
 

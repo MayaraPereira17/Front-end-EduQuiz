@@ -4,6 +4,7 @@ import { AuthContext } from './AuthContext';
 
 import type { AuthContextType, User, RegisterData, UpdateProfileData } from '../types/auth';
 import { authService } from '../services/authService';
+import { getUserRedirectPath } from '../utils/authRedirect';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -15,21 +16,31 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<{ redirectPath: string }> => {
     setLoading(true);
     try {
       const response = await authService.login(email, password);
       setUser(response.user);
+      
+      // Retornar o path de redirecionamento baseado no role
+      const redirectPath = getUserRedirectPath(response.user.role);
+      return { redirectPath };
+    } catch (error) {
+      throw error; // Re-throw para que o componente possa capturar
     } finally {
       setLoading(false);
     }
   };
 
-  const register = async (userData: RegisterData) => {
+  const register = async (userData: RegisterData): Promise<{ redirectPath: string }> => {
     setLoading(true);
     try {
       const response = await authService.register(userData);
       setUser(response.user);
+      
+      // Retornar o path de redirecionamento baseado no role
+      const redirectPath = getUserRedirectPath(userData.role);
+      return { redirectPath };
     } finally {
       setLoading(false);
     }

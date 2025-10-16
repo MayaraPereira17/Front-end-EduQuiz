@@ -17,8 +17,8 @@ export const studentRatingsHome: {
   },
   {
     img: "trophy",
-    value: 24,
-    description: "Quizzes completos",
+    value: 15,
+    description: "Conquistas",
   },
   {
     img: "rise",
