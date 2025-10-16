@@ -15,29 +15,34 @@ interface AuthService {
 
 export const authService: AuthService = {
   register: async (userData) => {
-    const response = await api.post('/api/Auth/register', userData);
+    // Adicionar ConfirmPassword se não estiver presente
+    const dataWithConfirmPassword = {
+      ...userData,
+      ConfirmPassword: userData.ConfirmPassword || userData.password
+    };
+    const response = await api.post('/api/auth/register', dataWithConfirmPassword);
     return response.data;
   },
 
   login: async (email, password) => {
-    const response = await api.post('/api/Auth/login', { email, password });
+    const response = await api.post('/api/auth/login', { email, password });
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data.user));
     return response.data;
   },
 
   getProfile: async () => {
-    const response = await api.get('/api/Auth/profile');
+    const response = await api.get('/api/auth/profile');
     return response.data;
   },
 
   updateProfile: async (profileData) => {
-    const response = await api.put('/api/Auth/profile', profileData);
+    const response = await api.put('/api/auth/profile', profileData);
     return response.data;
   },
 
   changePassword: async (currentPassword, newPassword) => {
-    const response = await api.put('/api/Auth/change-password', { currentPassword, newPassword });
+    const response = await api.put('/api/auth/change-password', { currentPassword, newPassword });
     return response.data;
   },
 

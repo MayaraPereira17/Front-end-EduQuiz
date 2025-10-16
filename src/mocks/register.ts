@@ -51,7 +51,7 @@ export const userType = [
     icon: GraduationCap,
     fields: [
       { label: "Organização/Empresa", placeholder: "Nome da empresa" },
-      { label: "Chave de liberação de acesso", placeholder: "*********" },
-    ],
+      // { label: "Chave de liberação de acesso", placeholder: "*********" },
+    ], // Campos específicos comentados por enquanto
   },
 ];

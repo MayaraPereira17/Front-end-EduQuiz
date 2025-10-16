@@ -24,6 +24,7 @@ export interface RegisterData {
   cpf?: string;
   dataNascimento?: string;
   role: "0" | "1" | "2"; // Aluno, Professor, Técnico
+  ConfirmPassword?: string; // Campo obrigatório pela API
 }
 
 export interface UpdateProfileData {
