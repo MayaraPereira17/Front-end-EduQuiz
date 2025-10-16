@@ -1,17 +1,23 @@
+import { useState } from "react";
 import { Tabs } from "./tabs";
 import settingsIcon from "../../../assets/icons/settings.svg";
-import { Avatar } from "../Ranking/avatarComponent";
+import { Avatar } from "./tabs/overview/avatar";
 import { useAuth } from "../../../hooks/userAuth";
+import { EditProfileModal } from "../../../components/EditProfileModal";
 
 export function Profile() {
   const { user } = useAuth();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   
   return (
     <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] ">
       <div className="flex justify-between pt-11">
         <h3 className="font-bold text-3xl ml-14">Meu Perfil</h3>
 
-        <button className="bg-white py-2 px-4 text-sm font-bold rounded-xl flex items-center justify-center mr-24">
+        <button 
+          onClick={() => setIsEditModalOpen(true)}
+          className="bg-white py-2 px-4 text-sm font-bold rounded-xl flex items-center justify-center mr-24 hover:bg-gray-50 transition-colors"
+        >
           <img src={settingsIcon} alt="Icone" />
           Editar Perfil
         </button>
@@ -19,7 +25,12 @@ export function Profile() {
 
       <div className="px-24 flex flex-col gap-8 pt-8">
         <div className="bg-white flex items-center max-h-44 h-full p-11 rounded-4xl gap-8">
-          <Avatar className="h-28 w-28" />
+          <Avatar 
+            currentAvatar={user?.avatarUrl}
+            size="lg"
+            showUploadButton={false}
+            className="flex-shrink-0"
+          />
 
           <div className="flex flex-col">
             <span className="font-bold text-lg">
@@ -32,6 +43,12 @@ export function Profile() {
         </div>
         <Tabs />
       </div>
+
+      {/* Modal de Edição de Perfil */}
+      <EditProfileModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+      />
     </div>
   );
 }

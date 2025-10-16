@@ -7,6 +7,7 @@ export interface User {
   fullName: string;
   cpf?: string;
   dataNascimento?: string;
+  avatarUrl?: string;
   role: "0" | "1" | "2";
   isActive: boolean;
   createdAt: string;
@@ -33,6 +34,7 @@ export interface UpdateProfileData {
   email?: string;
   cpf?: string;
   dataNascimento?: string;
+  avatarUrl?: string;
 }
 
 
