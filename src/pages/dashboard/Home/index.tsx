@@ -16,7 +16,7 @@ export function Home() {
       {/* Primeira linha de graficos */}
       <div className="grid grid-cols-5 gap-7">
         {studentRatingsHome.map((item) => (
-          <StudentStats item={item} />
+          <StudentStats item={item} key={item.value} />
         ))}
       </div>
 

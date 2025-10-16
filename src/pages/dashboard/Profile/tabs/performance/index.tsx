@@ -26,7 +26,7 @@ export function Performance() {
 
       <div className="flex flex-col gap-4">
         {performanceValue.map((item) => (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2" key={item.quizType}>
             <div className="flex justify-between ">
               <span className="font-bold text-md">{item.quizType}</span>
               <span className="text-sm text-[#404040]">{item.percentage}%</span>

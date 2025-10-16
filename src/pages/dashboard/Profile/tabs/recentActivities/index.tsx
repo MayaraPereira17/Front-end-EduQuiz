@@ -29,7 +29,10 @@ export function RecentActivities() {
 
       <div className="flex flex-col gap-2.5">
         {recentActivities.map((item) => (
-          <div className="flex justify-between border bg-white items-center border-[#D9D9D9] rounded-md px-6 py-2 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]">
+          <div
+            className="flex justify-between border bg-white items-center border-[#D9D9D9] rounded-md px-6 py-2 shadow-[0_4px_4px_0_rgba(0,0,0,0.25)]"
+            key={item.name}
+          >
             <div className="flex flex-col">
               <span className="text-base font-bold">{item.name}</span>
               <span className="text-sm text-[#404040]">{item.date}</span>

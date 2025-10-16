@@ -14,8 +14,6 @@ export function CoachLayout() {
     ? "quizz"
     : "home";
 
-  console.log(activeTab);
-
   const handleTabChange = (tab: string) => {
     // Navega para a rota correspondente quando a tab muda
     if (tab === "home") navigate("/coach");

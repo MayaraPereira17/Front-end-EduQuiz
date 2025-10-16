@@ -4,7 +4,7 @@ import BookBlackIcon from "../../assets/icons/book-black.svg";
 import { CreateQuizzQuestion } from "../../components/createQuizzQuestion";
 import { useQuestoesStore } from "../../store/useQuestoesStore";
 
-export function CreateCoachQuizz() {
+export function EditCoachQuizz() {
   const {
     titulo,
     descricao,
@@ -19,8 +19,8 @@ export function CreateCoachQuizz() {
   return (
     <div className="px-4 h-full  overflow-auto">
       <TitleWithGoBack
-        title="Criar Novo Quiz"
-        subtitle="Crie um quiz personalizado para seus alunos"
+        title="Editar Quiz"
+        subtitle="Modifique seu quiz existente"
       />
 
       <div className="space-y-6">

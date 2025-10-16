@@ -20,7 +20,10 @@ export function Ranking() {
       <div className="border border-[#D9D9D9] rounded-4xl bg-white mx-auto space-y-4 px-10 py-10 mb-16 ">
         {rankingsMocks.map((item) => {
           return (
-            <div className="bg-[#FFF4E4] py-6 flex justify-between px-7 rounded-4xl border border-[#D9D9D9] items-center">
+            <div
+              className="bg-[#FFF4E4] py-6 flex justify-between px-7 rounded-4xl border border-[#D9D9D9] items-center"
+              key={item.name}
+            >
               <div className="flex items-center gap-8 font-bold">
                 <span className="text-xl">#{item.position}</span>
                 <div className="flex items-center gap-3">

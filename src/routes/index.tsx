@@ -8,6 +8,8 @@ import { MyQuizzesCoach } from "../pages/coach/tabs/myQuizzes";
 import { CoachLayout } from "../pages/coach/_layouts/coachLayout";
 import { CreateCoachQuizz } from "../pages/createCoachQuizz";
 import { HomeCoach } from "../pages/coach/tabs/home";
+import { EditCoachQuizz } from "../pages/editCoachQuizz";
+import { Register } from "../pages/register";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +19,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
   {
     path: "/dashboard",
@@ -30,6 +36,7 @@ const router = createBrowserRouter([
       { path: "quizz", element: <MyQuizzesCoach /> }, // aba Quizzes
       { path: "profile", element: <ProfileCoach /> }, // aba Profile
       { path: "quizz/create-quizz", element: <CreateCoachQuizz /> }, // subrota
+      { path: "quizz/edit-quizz", element: <EditCoachQuizz /> }, // subrota
     ],
   },
 ]);

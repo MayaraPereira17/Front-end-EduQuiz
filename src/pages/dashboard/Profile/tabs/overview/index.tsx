@@ -5,7 +5,7 @@ export function Overview() {
   return (
     <div className="grid grid-cols-4 gap-16">
       {studentRatingsProfile.map((item) => (
-        <StudentStats item={item} />
+        <StudentStats item={item} key={item.value} />
       ))}
     </div>
   );

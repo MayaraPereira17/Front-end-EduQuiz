@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router";
 import ArrowLeftIcon from "../../../assets/icons/arrow-left.svg";
 
-export function TitleWithGoBack() {
+interface Props {
+  title: string;
+  subtitle: string;
+}
+export function TitleWithGoBack({ title, subtitle }: Props) {
   const navigate = useNavigate();
 
   const goBack = () => {
@@ -19,10 +23,8 @@ export function TitleWithGoBack() {
       </button>
 
       <div>
-        <h4 className="font-bold text-3xl ">Criar Novo Quiz</h4>
-        <span className="text-base text-[#4A5565]">
-          Crie um quiz personalizado para seus alunos
-        </span>
+        <h4 className="font-bold text-3xl ">{title}</h4>
+        <span className="text-base text-[#4A5565]">{subtitle}</span>
       </div>
     </div>
   );
