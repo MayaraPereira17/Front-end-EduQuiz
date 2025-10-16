@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/userAuth";
 import { AxiosError } from "axios";
 
@@ -19,12 +19,14 @@ export function LoginForm() {
 
     try {
       await login(email, password); // login via hook
-      navigate("/dashboard");       // redireciona se login ok
+      navigate("/dashboard"); // redireciona se login ok
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       const apiMessage = axiosError.response?.data?.message;
 
-      setError(apiMessage || "Erro ao fazer login. Tente novamente mais tarde.");
+      setError(
+        apiMessage || "Erro ao fazer login. Tente novamente mais tarde."
+      );
     } finally {
       setLoading(false);
       setEmail("");
@@ -42,11 +44,7 @@ export function LoginForm() {
       </p>
 
       <form className="flex flex-col" onSubmit={handleSubmit}>
-        {error && (
-          <div className="text-red-500 text-sm mb-4">
-            {error}
-          </div>
-        )}
+        {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
 
         <label className="font-medium mb-1.5">Email</label>
         <input
@@ -79,9 +77,9 @@ export function LoginForm() {
 
       <div className="flex gap-1">
         <span className="text-sm text-[#717171]">Não tem uma conta?</span>
-        <a href="/register" className="font-medium text-sm">
+        <Link className="font-medium text-sm" to="/register">
           Cadastre-se aqui
-        </a>
+        </Link>
       </div>
     </div>
   );

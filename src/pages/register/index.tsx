@@ -1,7 +1,8 @@
-import { ArrowLeft, CircleUser } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { RadioGroup } from "radix-ui";
 import { labels, userType } from "../../mocks/register";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 export function Register() {
   const [selectedUserType, setSelectedUserType] = useState<string | null>(
@@ -10,11 +11,19 @@ export function Register() {
 
   const selectedType = userType.find((ut) => ut.title === selectedUserType);
 
+  let navigate = useNavigate();
+
+  const goBack = () => {
+    navigate(-1);
+  };
+
   return (
     <div className="bg-[#C6DBEF] h-full flex-1 flex justify-center items-center overflow-auto py-11">
       <div className="bg-white p-10 min-w-96  rounded-4xl">
         <div className="flex gap-5 items-center">
-          <ArrowLeft />
+          <button onClick={goBack}>
+            <ArrowLeft />
+          </button>
 
           <div className="space-y-2">
             <h4 className="text-base">Criar Conta</h4>
