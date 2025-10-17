@@ -1,6 +1,7 @@
 import Logo from "../logo";
 import * as Tabs from "@radix-ui/react-tabs";
 import { AvatarDemo } from "../avatar";
+import { useAuth } from "../../hooks/userAuth";
 
 interface HeaderProps {
   children: React.ReactNode;
@@ -8,6 +9,8 @@ interface HeaderProps {
 }
 
 export function Header({ children, isTeacher = false }: HeaderProps) {
+  const { logout } = useAuth();
+
   return (
     <header className="px-12 flex justify-between items-center h-[4.5rem] shrink-0 bg-white">
       <div>
@@ -20,7 +23,9 @@ export function Header({ children, isTeacher = false }: HeaderProps) {
 
       <div className="flex gap-10">
         <AvatarDemo isTeacher={isTeacher} />
-        <button className="text-[#404040] text-sm">Sair</button>
+        <button className="text-[#404040] text-sm" onClick={logout}>
+          Sair
+        </button>
       </div>
     </header>
   );

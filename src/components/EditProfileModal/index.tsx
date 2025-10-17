@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Camera } from 'lucide-react';
 import { useAuth } from '../../hooks/userAuth';
-import { AvatarUpload } from '../AvatarUpload';
-import { avatarService } from '../../services/avatarService';
+import { AvatarColorPicker } from '../AvatarColorPicker';
 
 interface EditProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onProfileUpdated?: () => void;
 }
 
 export const EditProfileModal: React.FC<EditProfileModalProps> = ({
   isOpen,
-  onClose
+  onClose,
+  onProfileUpdated
 }) => {
   const { user, updateProfile } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -26,6 +27,9 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     cpf: '',
     dataNascimento: ''
   });
+
+  // Estado para a cor do avatar
+  const [avatarColor, setAvatarColor] = useState('#3B82F6');
 
   // Preencher formulário com dados do usuário
   useEffect(() => {
@@ -55,13 +59,14 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     setSuccess(false);
 
     try {
-      // Preparar dados para envio
+      // Preparar dados para envio (incluindo cor do avatar)
       const updateData = {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
         cpf: formData.cpf || undefined,
-        dataNascimento: formData.dataNascimento ? `${formData.dataNascimento}T00:00:00Z` : undefined
+        dataNascimento: formData.dataNascimento ? `${formData.dataNascimento}T00:00:00Z` : undefined,
+        avatarColor: avatarColor // Adicionar cor do avatar
       };
 
       await updateProfile(updateData);
@@ -70,6 +75,10 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
       setTimeout(() => {
         onClose();
         setSuccess(false);
+        // Notificar componente pai sobre a atualização
+        if (onProfileUpdated) {
+          onProfileUpdated();
+        }
       }, 1500);
 
     } catch (error: any) {
@@ -107,15 +116,15 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
           {/* Seção do Avatar */}
           <div className="flex flex-col items-center mb-8">
             <div className="relative">
-              <AvatarUpload
-                currentAvatar={user?.avatarUrl}
+              <AvatarColorPicker
                 size="lg"
-                showUploadButton={true}
-                onAvatarUpdate={handleAvatarUpdate}
+                onColorChange={(color) => {
+                  setAvatarColor(color);
+                }}
               />
             </div>
             <p className="text-sm text-gray-600 mt-3 text-center">
-              Clique na câmera para alterar sua foto de perfil
+              Clique no ícone de paleta para escolher a cor do seu avatar
             </p>
           </div>
 

@@ -11,7 +11,11 @@ import { HomeCoach } from "../pages/coach/tabs/home";
 import { EditCoachQuizz } from "../pages/editCoachQuizz";
 import { Register } from "../pages/register";
 import { ProtectedRoute } from "../components/ProtectedRoute";
-import { AdminDashboard } from "../pages/admin";
+import { AdminLayout } from "../pages/admin/_layouts/adminLayout";
+import { HomeAdmin } from "../pages/admin/tabs/home";
+import { ProfileAdmin } from "../pages/admin/tabs/profile";
+import { ReportsAdmin } from "../pages/admin/tabs/reports";
+import { RankingAdmin } from "../pages/admin/tabs/ranking";
 
 const router = createBrowserRouter([
   {
@@ -52,10 +56,16 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <ProtectedRoute allowedRoles={["2"]}>
-        <AdminDashboard />
-      </ProtectedRoute>
+      // <ProtectedRoute allowedRoles={["2"]}>
+      <AdminLayout />
+      // </ProtectedRoute>
     ),
+    children: [
+      { path: "", element: <HomeAdmin /> },
+      { path: "ranking", element: <RankingAdmin /> },
+      { path: "reports", element: <ReportsAdmin /> },
+      { path: "profile", element: <ProfileAdmin /> },
+    ],
   },
 ]);
 

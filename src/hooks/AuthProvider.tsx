@@ -56,6 +56,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       const updatedUser = await authService.updateProfile(profileData);
       setUser(updatedUser);
+      // Salvar no localStorage para persistir entre sessões
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     } finally {
       setLoading(false);
     }
