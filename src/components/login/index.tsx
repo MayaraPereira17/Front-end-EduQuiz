@@ -37,7 +37,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] flex flex-col pt-16 pb-16 px-20 rounded-4xl bg-white">
+    <div className="shadow-[0_4px_20px_-2px_rgba(0,0,0,0.25)] flex flex-col pt-16 pb-16 px-20 rounded-4xl bg-white mb-10">
       <h4 className="text-base font-medium mb-3 text-center">
         Entrar na Plataforma
       </h4>
