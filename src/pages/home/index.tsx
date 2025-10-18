@@ -1,4 +1,4 @@
-import logoImg from "../../../public/edulogo.svg";
+import logoImg from "/edulogo.svg?url";
 import wavesImg from "../../assets/waves.png";
 import meninosImg from "../../assets/meninos-da-caixa.png";
 import raioImg from "../../assets/raio.png";
