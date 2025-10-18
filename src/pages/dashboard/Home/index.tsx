@@ -6,7 +6,7 @@ import { useAuth } from "../../../hooks/userAuth";
 
 export function Home() {
   const { user } = useAuth();
-  
+
   return (
     <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-14">
       <div className="flex flex-col gap-4 pb-4 pt-9">
@@ -56,7 +56,7 @@ export function Home() {
           </button>
         </div>
 
-        <div className="bg-white min-h-48 flex flex-col justify-evenly rounded-4xl ">
+        <div className="bg-white min-h-48 flex flex-col justify-evenly rounded-4xl mb-10">
           <span className="px-8">Quizzes Recentes</span>
 
           <div className="border flex flex-row justify-between rounded-xl mx-12 px-5 items-center border-[#D9D9D9] py-2">
