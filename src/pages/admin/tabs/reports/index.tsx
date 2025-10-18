@@ -1,4 +1,4 @@
-import {  Download, FileText } from "lucide-react";
+import { Download, FileText } from "lucide-react";
 import { DetailsStudent } from "./detailsStudent";
 import { studentsDetails } from "../../../../mocks/detailsStudents";
 
@@ -19,18 +19,17 @@ export function ReportsAdmin() {
         </button>
       </div>
 
-      <div className="bg-white p-6 rounded-xl border border-black/10">
+      <div className="bg-white p-6 rounded-xl border border-black/10 mb-10">
         <div className="flex items-center gap-2 mb-7">
           <FileText color="#2B7FFF" width={20} height={20} />
           <h5 className="text-base">Detalhamento por Aluno</h5>
         </div>
 
-        <div className="space-y-4">
-          {studentsDetails.map(item => (
-          <DetailsStudent key={item.name} item={item} />
+        <div className="space-y-4 ">
+          {studentsDetails.map((item) => (
+            <DetailsStudent key={item.name} item={item} />
           ))}
         </div>
-
       </div>
     </div>
   );
