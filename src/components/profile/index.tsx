@@ -2,6 +2,7 @@ import { Badge } from "../../components/badge";
 import { Avatar } from "../../pages/dashboard/Ranking/avatarComponent";
 import BlueCapIcon from "../../assets/icons/blue-cap.svg";
 import { Settings } from "lucide-react";
+import { useState } from "react";
 
 interface Props {
   firstCardIcon: React.ReactNode;
@@ -10,6 +11,7 @@ interface Props {
   secondaCardValue: string;
   firstTitleCardValue: string;
   secondTitleCardValue: string;
+  isTeacher?: boolean
 }
 
 export function Profile({
@@ -19,35 +21,80 @@ export function Profile({
   secondCardIcon,
   secondTitleCardValue,
   secondaCardValue,
+  isTeacher = true
 }: Props) {
+  const [isEditable, setIsEditable] = useState(false)
+
+  const handleEditProfile = () => {
+    setIsEditable(prev => !prev)
+  }
+
+  console.log(isEditable)
+
   return (
     <div className="flex flex-col h-full px-4">
       <div className="my-6 flex items-center justify-between">
         <h4 className="font-bold text-3xl ">Meu Perfil</h4>
 
-        <button className="flex gap-2.5 items-center justify-center border border-black/10 py-1.5 px-3 rounded-lg text-sm bg-white">
+        <button onClick={handleEditProfile} className="flex gap-2.5 items-center justify-center border border-black/10 py-1.5 px-3
+         rounded-lg text-sm bg-white">
           <Settings width={16} height={16} color="black" />
           Editar Perfil
         </button>
       </div>
 
-      <div className="bg-white flex items-center max-h-44 h-full p-11 rounded-4xl gap-8 flex-6">
-        <Avatar className="h-28 w-28" />
+      <div className="bg-white flex items-center  p-11 rounded-4xl gap-8">
+        <div>
+          <Avatar className="h-28 w-28" />
+        </div>
 
-        <div className="flex flex-col">
-          <div className="flex items-center justify-center gap-1 mb-2">
+        <div className="flex flex-col w-full">
+          <div className="flex items-center gap-1 mb-2">
             <span className="font-bold text-2xl">Prof. João Silva</span>
 
-            <Badge
-              variant="info"
-              icon={<img src={BlueCapIcon} alt="Ícone" />}
-              className="!py-0 px-2 gap-1"
-            >
-              Professor
-            </Badge>
+            {
+              isTeacher && (
+              <Badge
+               variant="info"
+               icon={<img src={BlueCapIcon} alt="Ícone" />}
+               className="!py-0 px-2 gap-1"
+              >
+                Professor
+              </Badge>
+              )
+            }
+
+            
           </div>
           <div className="flex flex-col gap-1">
-            <span className="font-normal text-sm text-[#404040]">
+            {isEditable ? (
+              <>
+              <label className="text-sm">Nome</label>
+              
+              <input
+                  type="text"
+                  placeholder="Carlos Técnico"
+                  className="bg-[#F3F3F5] border border-black/10 py-1 rounded-lg px-3 text-sm text-[#717182]"
+                />
+
+                <label className="text-sm">Email</label>
+
+              <input
+                  type="text"
+                  placeholder="tecnico@demo.com"
+                  className="bg-[#F3F3F5] border border-black/10 py-1 rounded-lg px-3 text-sm text-[#717182]"
+                />
+
+              <label className="text-sm">Empresa</label>
+              <input
+                  type="text"
+                  placeholder="Empresa"
+                  className="bg-[#F3F3F5] border border-black/10 py-1 rounded-lg px-3 text-sm text-[#717182]"
+                />
+              </>
+            ) : (
+              <>
+               <span className="font-normal text-sm text-[#404040]">
               tecnico@demo.com
             </span>
             <span className="font-normal text-sm text-[#404040]">
@@ -56,6 +103,11 @@ export function Profile({
             <span className="font-normal text-sm text-[#404040]">
               Matemática
             </span>
+              
+              </>
+
+            )}
+           
           </div>
         </div>
       </div>

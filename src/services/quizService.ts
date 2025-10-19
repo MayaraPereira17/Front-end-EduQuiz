@@ -41,7 +41,7 @@ export interface CreateQuizData {
   titulo: string;
   descricao?: string;
   categoriaId: number;
-  // dificuldade removido - não existe no banco
+  dificuldade: string;
   tempoLimite: number;
   maxTentativas?: number;
   publico?: boolean;
@@ -52,7 +52,7 @@ export interface UpdateQuizData {
   titulo?: string;
   descricao?: string;
   categoriaId?: number;
-  // dificuldade removido - não existe no banco
+  dificuldade?: string;
   tempoLimite?: number;
   maxTentativas?: number;
   ativo?: boolean;

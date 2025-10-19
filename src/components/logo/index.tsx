@@ -1,5 +1,5 @@
 import React from "react";
-import logoImg from "../../../public/edulogo.svg";
+import logoImg from "/edulogo.svg?url";
 
 interface LogoProps {
   containerClass?: string;

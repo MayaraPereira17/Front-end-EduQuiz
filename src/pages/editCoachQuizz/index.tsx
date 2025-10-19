@@ -24,12 +24,15 @@ export function EditCoachQuizz() {
   const {
     titulo,
     descricao,
+    dificuldade,
     tempoLimite,
     questoes,
     setTitulo,
     setDescricao,
+    setDificuldade,
     setTempoLimite,
     resetQuiz,
+    carregarQuestoes,
   } = useQuestoesStore();
 
   // Carregar dados do quiz e categorias
@@ -55,20 +58,37 @@ export function EditCoachQuizz() {
   const loadQuiz = async (id: string) => {
     try {
       setLoadingQuiz(true);
+      console.log('Carregando quiz com ID:', id);
+      
       const quiz = await quizService.getQuizById(id);
+      console.log('Quiz carregado:', quiz);
       
       // Preencher o store com os dados do quiz
-      setTitulo(quiz.titulo);
+      console.log('Preenchendo store com dados do quiz:');
+      console.log('Título:', quiz.titulo);
+      console.log('Descrição:', quiz.descricao);
+      console.log('Dificuldade:', quiz.dificuldade);
+      console.log('Tempo limite:', quiz.tempoLimite);
+      console.log('Categoria ID:', quiz.categoriaId);
+      
+      setTitulo(quiz.titulo || '');
       setDescricao(quiz.descricao || '');
-      // dificuldade removido - campo não existe no banco
+      setDificuldade(quiz.dificuldade === 'Facil' ? 'easy' : quiz.dificuldade === 'Media' ? 'medium' : 'hard');
       setTempoLimite(quiz.tempoLimite?.toString() || "30");
       setSelectedCategoryId(quiz.categoriaId || null);
       
-      // Limpar questões existentes e adicionar as do quiz
-      resetQuiz();
-      // TODO: Implementar carregamento das questões no store
+      // Carregar questões do quiz
+      if (quiz.questoes && quiz.questoes.length > 0) {
+        console.log('Carregando questões:', quiz.questoes);
+        carregarQuestoes(quiz.questoes);
+        console.log('Questões carregadas no store');
+      } else {
+        console.log('Nenhuma questão encontrada no quiz');
+        carregarQuestoes([]); // Limpar questões existentes
+      }
       
     } catch (err: any) {
+      console.error('Erro ao carregar quiz:', err);
       setError(err.message || 'Erro ao carregar quiz');
     } finally {
       setLoadingQuiz(false);
@@ -92,7 +112,10 @@ export function EditCoachQuizz() {
       return;
     }
 
-    // Validação de dificuldade removida - campo não existe no banco
+    if (!dificuldade) {
+      setError('Dificuldade é obrigatória');
+      return;
+    }
 
     const tempoLimiteNum = parseInt(tempoLimite);
     if (!tempoLimite || isNaN(tempoLimiteNum) || tempoLimiteNum <= 0 || tempoLimiteNum > 40) {
@@ -141,7 +164,7 @@ export function EditCoachQuizz() {
         titulo: titulo.trim(),
         descricao: descricao.trim() || undefined, // Opcional conforme guia
         categoriaId: selectedCategoryId!,
-        // dificuldade removido - não existe no banco
+        dificuldade: dificuldade === 'easy' ? 'Fácil' : dificuldade === 'medium' ? 'Médio' : 'Difícil',
         tempoLimite: tempoLimiteNum, // Usar valor validado
         maxTentativas: 3, // Padrão conforme guia
         ativo: true,
@@ -232,6 +255,14 @@ export function EditCoachQuizz() {
       </div>
     );
   }
+
+  // Log dos valores atuais do store para debug
+  console.log('Valores atuais do store:');
+  console.log('Título:', titulo);
+  console.log('Descrição:', descricao);
+  console.log('Tempo limite:', tempoLimite);
+  console.log('Questões:', questoes);
+  console.log('Categoria selecionada:', selectedCategoryId);
 
   return (
     <div className="px-4 h-full  overflow-auto">

@@ -10,6 +10,7 @@ export function ProfileAdmin() {
       secondCardIcon={<ChartColumn width={32} height={32} color="#00C950" />}
       secondTitleCardValue="76.5%"
       secondaCardValue="Média da Turma"
+      isTeacher={false}
     />
   );
 }

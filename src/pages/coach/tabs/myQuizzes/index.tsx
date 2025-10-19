@@ -59,9 +59,11 @@ export function MyQuizzesCoach() {
       }
       
       setQuizzes(quizzesData);
+      return quizzesData; // Retornar os dados carregados
     } catch (err: any) {
       console.error('Erro ao carregar quizzes:', err);
       setError(err.message || 'Erro ao carregar quizzes');
+      return [];
     } finally {
       setLoading(false);
     }
@@ -119,7 +121,7 @@ export function MyQuizzesCoach() {
     if (window.confirm('Tem certeza que deseja excluir este quiz?')) {
       try {
         await quizService.deleteQuiz(quizId);
-        await loadQuizzes(); // Recarregar lista
+        await loadQuizzes(searchTerm); // Recarregar lista
         await loadStats(); // Recarregar estatísticas
       } catch (err: any) {
         setError(err.message || 'Erro ao excluir quiz');
@@ -150,7 +152,20 @@ export function MyQuizzesCoach() {
       
       // Recarregar dados
       console.log('Recarregando quizzes...');
-      await loadQuizzes();
+      console.log('Termo de busca atual:', searchTerm);
+      const updatedQuizzes = await loadQuizzes(searchTerm);
+      console.log('Quizzes recarregados:', updatedQuizzes);
+      
+      // Verificar se o quiz foi atualizado corretamente
+      const updatedQuiz = updatedQuizzes.find(q => q.id?.toString() === quizId);
+      if (updatedQuiz) {
+        console.log('Quiz atualizado encontrado:', updatedQuiz);
+        console.log('Status público:', updatedQuiz.publico);
+        console.log('Status ativo:', updatedQuiz.ativo);
+      } else {
+        console.log('Quiz não encontrado na lista atualizada');
+      }
+      
       await loadStats();
       
       // Limpar mensagem de sucesso após 3 segundos
@@ -158,6 +173,33 @@ export function MyQuizzesCoach() {
     } catch (err: any) {
       console.error('Erro ao alterar status do quiz:', err);
       setError(err.response?.data?.message || err.message || 'Erro ao alterar status do quiz');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveAsDraft = async (quizId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      
+      console.log('Salvando quiz como rascunho...', quizId);
+      
+      // Atualizar quiz para rascunho (publico: false)
+      await quizService.updateQuiz(quizId, { publico: false });
+      setSuccess('Quiz salvo como rascunho com sucesso!');
+      console.log('Quiz salvo como rascunho');
+      
+      // Recarregar dados
+      await loadQuizzes(searchTerm);
+      await loadStats();
+      
+      // Limpar mensagem de sucesso após 3 segundos
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      console.error('Erro ao salvar como rascunho:', err);
+      setError(err.response?.data?.message || err.message || 'Erro ao salvar como rascunho');
     } finally {
       setLoading(false);
     }
@@ -346,18 +388,29 @@ export function MyQuizzesCoach() {
           </div>
         ) : (
         filteredQuizzes.map((quiz) => {
-          console.log('Renderizando quiz:', quiz.titulo, 'Status público:', quiz.publico);
+          // Verificar se o quiz está publicado (pode ser 'publico' ou 'publicado')
+          const isPublished = quiz.publico === true || quiz.publicado === true;
+          
+          console.log('=== RENDERIZANDO QUIZ ===');
+          console.log('Título:', quiz.titulo);
+          console.log('ID:', quiz.id);
+          console.log('Público:', quiz.publico);
+          console.log('Publicado:', quiz.publicado);
+          console.log('Ativo:', quiz.ativo);
+          console.log('isPublished (calculado):', isPublished);
           return (
           <div key={quiz.id} className="bg-white border border-black/10 px-6 rounded-2xl py-5 !mb-6">
             <div className="flex justify-between items-center mb-2">
               <span className="text-[#0A0A0A] text-lg">{quiz.titulo}</span>
 
               <Badge
-                variant={quiz.publico ? "success" : "default"}
-                className="gap-1 items-center justify-center"
-                icon={quiz.publico ? <img src={checkedSmallImg} /> : undefined}
+                variant={isPublished ? "success" : "default"}
+                className={`gap-1 items-center justify-center ${
+                  quiz.ativo === false ? 'bg-red-100 text-red-700 border-red-200' : ''
+                }`}
+                icon={isPublished ? <img src={checkedSmallImg} /> : undefined}
               >
-                {quiz.publico ? "Ativo" : "Rascunho"}
+                {isPublished ? "Publicado" : quiz.ativo === false ? "Desativado" : "Rascunho"}
               </Badge>
             </div>
 
@@ -413,17 +466,44 @@ export function MyQuizzesCoach() {
             </button>
 
             <div className="flex justify-between items-center">
-              <button 
-                className={`text-sm px-3 py-1 rounded border transition-colors ${
-                  quiz.publico 
-                    ? 'border-red-300 text-red-700 hover:bg-red-50' 
-                    : 'border-green-300 text-green-700 hover:bg-green-50'
-                }`}
-                onClick={() => handleTogglePublish(quiz.id!.toString(), quiz.publico || false)}
-                disabled={loading}
-              >
-                {loading ? 'Processando...' : (quiz.publico ? 'Despublicar' : 'Publicar')}
-              </button>
+              <div className="flex gap-2">
+                {(() => {
+                  console.log('=== AVALIANDO BOTÕES ===');
+                  console.log('isPublished:', isPublished);
+                  console.log('!isPublished:', !isPublished);
+                  return null;
+                })()}
+                
+                {!isPublished && (
+                  <button 
+                    className="text-sm px-3 py-1 rounded border border-green-300 text-green-700 hover:bg-green-50 transition-colors"
+                    onClick={() => handleTogglePublish(quiz.id!.toString(), false)}
+                    disabled={loading}
+                  >
+                    {loading ? 'Processando...' : 'Publicar'}
+                  </button>
+                )}
+                
+                {isPublished && (
+                  <button 
+                    className="text-sm px-3 py-1 rounded border border-red-300 text-red-700 hover:bg-red-50 transition-colors"
+                    onClick={() => handleTogglePublish(quiz.id!.toString(), true)}
+                    disabled={loading}
+                  >
+                    {loading ? 'Processando...' : 'Despublicar'}
+                  </button>
+                )}
+                
+                {isPublished && (
+                  <button 
+                    className="text-sm px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
+                    onClick={() => handleSaveAsDraft(quiz.id!.toString())}
+                    disabled={loading}
+                  >
+                    {loading ? 'Processando...' : 'Salvar como Rascunho'}
+                  </button>
+                )}
+              </div>
               
               <button 
                 className="hover:bg-red-50 p-1 rounded transition-colors"

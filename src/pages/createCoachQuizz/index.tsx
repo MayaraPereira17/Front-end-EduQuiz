@@ -20,6 +20,7 @@ export function CreateCoachQuizz() {
   const {
     titulo,
     descricao,
+    dificuldade,
     tempoLimite,
     questoes,
     setTitulo,
@@ -59,7 +60,10 @@ export function CreateCoachQuizz() {
       return;
     }
 
-    // Validação de dificuldade removida - campo não existe no banco
+    if (!dificuldade) {
+      setError('Dificuldade é obrigatória');
+      return;
+    }
 
     const tempoLimiteNum = parseInt(tempoLimite);
     if (!tempoLimite || isNaN(tempoLimiteNum) || tempoLimiteNum <= 0 || tempoLimiteNum > 40) {
@@ -108,7 +112,7 @@ export function CreateCoachQuizz() {
         titulo: titulo.trim(),
         descricao: descricao.trim() || undefined, // Opcional conforme guia
         categoriaId: selectedCategoryId!,
-        // dificuldade removido - não existe no banco
+        dificuldade: dificuldade === 'easy' ? 'Fácil' : dificuldade === 'medium' ? 'Médio' : 'Difícil',
         tempoLimite: tempoLimiteNum, // Usar valor validado
         maxTentativas: 3, // Padrão conforme guia
         publico: !isDraft, // true se não for rascunho

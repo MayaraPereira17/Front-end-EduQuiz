@@ -24,6 +24,7 @@ interface QuestoesState {
   atualizarQuestao: (id: string, novaQuestao: Partial<Questao>) => void;
   setRespostaCorreta: (id: string, letra: "A" | "B" | "C" | "D") => void;
   limparQuestoes: () => void;
+  carregarQuestoes: (questoes: any[]) => void;
 
   // Dados do quiz
   titulo: string;
@@ -73,6 +74,35 @@ export const useQuestoesStore = create<QuestoesState>((set) => ({
       ),
     })),
   limparQuestoes: () => set({ questoes: [] }),
+  carregarQuestoes: (questoes) => {
+    const questoesFormatadas = questoes.map((questao) => {
+      const opcaoCorreta = questao.opcoes?.find((op: any) => op.correta);
+      let respostaCorreta: "A" | "B" | "C" | "D" | undefined = undefined;
+      
+      if (opcaoCorreta) {
+        switch (opcaoCorreta.ordemIndice) {
+          case 0: respostaCorreta = 'A'; break;
+          case 1: respostaCorreta = 'B'; break;
+          case 2: respostaCorreta = 'C'; break;
+          case 3: respostaCorreta = 'D'; break;
+        }
+      }
+      
+      return {
+        id: questao.id?.toString() || crypto.randomUUID(),
+        pergunta: questao.textoQuestao || questao.pergunta || '',
+        opcoes: {
+          A: questao.opcoes?.[0]?.textoOpcao || '',
+          B: questao.opcoes?.[1]?.textoOpcao || '',
+          C: questao.opcoes?.[2]?.textoOpcao || '',
+          D: questao.opcoes?.[3]?.textoOpcao || '',
+        },
+        rascunho: false,
+        respostaCorreta,
+      };
+    });
+    set({ questoes: questoesFormatadas });
+  },
 
   // Dados do quiz
   titulo: "",
