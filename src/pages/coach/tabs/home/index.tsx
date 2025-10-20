@@ -1,5 +1,4 @@
 import { TeacherStats } from "../../../../components/teacherStats";
-import { teacherRatingsHome } from "../../../../mocks/teacherRatings";
 import PlusImg from "../../../../assets/icons/plus.svg";
 import PlusWhite from "../../../../assets/icons/plus-white.svg";
 import BookIcon from "../../../../assets/icons/book-purple.svg";
@@ -7,10 +6,22 @@ import MiniBookIcon from "../../../../assets/icons/mini-book.svg";
 import MiniProfile from "../../../../assets/icons/mini-profile.svg";
 import { useAuth } from "../../../../hooks/userAuth";
 import { useNavigate } from "react-router-dom";
+import { quizService } from "../../../../services/quizService";
+import { useState, useEffect } from "react";
+
+interface DashboardStats {
+  quizzesCriados: number;
+  mediaDosAlunos: number;
+  totalAlunos: number;
+  totalTentativas: number;
+  quizzesPublicados: number;
+}
 
 export function HomeCoach() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleCreateQuiz = () => {
     navigate("/coach/create-quizz");
@@ -23,6 +34,30 @@ export function HomeCoach() {
   const handleViewProfile = () => {
     navigate("/coach/profile");
   };
+
+  const loadDashboardStats = async () => {
+    try {
+      setLoading(true);
+      const dashboardData = await quizService.getDashboardStats();
+      setStats(dashboardData.estatisticas || dashboardData);
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas:", error);
+      // Em caso de erro, usar dados padrão
+      setStats({
+        quizzesCriados: 0,
+        mediaDosAlunos: 0,
+        totalAlunos: 0,
+        totalTentativas: 0,
+        quizzesPublicados: 0,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboardStats();
+  }, []);
 
   return (
     <div className="h-full overflow-auto flex flex-col justify-between px-4">
@@ -38,9 +73,23 @@ export function HomeCoach() {
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div>
             <div className="grid grid-cols-2 gap-7">
-              {teacherRatingsHome.map((item, index) => (
-                <TeacherStats key={index} item={item} />
-              ))}
+              {/* Quizzes Completos */}
+              <TeacherStats 
+                item={{
+                  img: "book" as any,
+                  value: stats?.totalTentativas || 0,
+                  description: "Quizzes completos"
+                }} 
+              />
+              
+              {/* Média Geral */}
+              <TeacherStats 
+                item={{
+                  img: "analytics" as any,
+                  value: loading ? "..." : `${stats?.mediaDosAlunos?.toFixed(1) || 0}%`,
+                  description: "Média geral"
+                }} 
+              />
 
               <div className="col-span-2 border border-black/10 rounded-2xl px-24 py-6 w-full flex flex-col items-center bg-white gap-3.5 2xl:h-96 justify-center">
                 <img src={PlusImg} alt="" />
