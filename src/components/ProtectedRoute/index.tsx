@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/userAuth';
 import { getUserRedirectPath, hasPermissionForRoute } from '../../utils/authRedirect';
 
@@ -28,13 +28,13 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       }
 
       // Se tem roles específicos definidos, verificar permissão
-      if (allowedRoles.length > 0 && !hasPermissionForRoute(user.role, allowedRoles)) {
+      if (allowedRoles.length > 0 && !hasPermissionForRoute(user, allowedRoles)) {
         // Se foi especificado um redirecionamento customizado
         if (redirectTo) {
           navigate(redirectTo);
         } else {
-          // Redirecionar para a tela correta baseada no role do usuário
-          const correctPath = getUserRedirectPath(user.role);
+          // Redirecionar para a tela correta baseada no usuário
+          const correctPath = getUserRedirectPath(user);
           navigate(correctPath);
         }
       }
@@ -59,7 +59,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Se não tem permissão, não renderizar nada (redirecionamento será feito no useEffect)
-  if (allowedRoles.length > 0 && !hasPermissionForRoute(user.role, allowedRoles)) {
+  if (allowedRoles.length > 0 && !hasPermissionForRoute(user, allowedRoles)) {
     return null;
   }
 

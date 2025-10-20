@@ -1,28 +1,34 @@
 import * as AvatarRadix from "@radix-ui/react-avatar";
-import ellipseImg from "../../../../assets/ellipse.png";
 import { cn } from "../../../../utils/cn";
+import { useAuth } from "../../../../hooks/userAuth";
 import type { HTMLProps } from "react";
 
 interface Props extends HTMLProps<HTMLElement["className"]> {}
 
 export function Avatar({ className }: Props) {
+  const { user } = useAuth();
+
+  // Gerar iniciais do nome do usuário
+  const getInitials = (firstName?: string, lastName?: string) => {
+    if (!firstName && !lastName) return "U";
+    return `${firstName?.charAt(0) || ""}${lastName?.charAt(0) || ""}`.toUpperCase();
+  };
+
+  const backgroundColor = user?.avatarColor || '#3B82F6';
+
   return (
     <AvatarRadix.Root
       className={cn(
-        "flex items-center justify-center overflow-hidden select-none w-8 h-8 rounded-full bg-black/10",
+        "flex items-center justify-center overflow-hidden select-none w-8 h-8 rounded-full",
         className
       )}
     >
-      <AvatarRadix.Image
-        className="w-full h-full object-cover rounded-inherit"
-        src={ellipseImg}
-        alt="Imagem Avatar"
-      />
       <AvatarRadix.Fallback
-        className="w-full h-full flex items-center justify-center bg-white text-violet-700 text-[15px] font-medium leading-none"
+        className="w-full h-full flex items-center justify-center text-white text-[15px] font-medium leading-none rounded-full"
+        style={{ backgroundColor }}
         delayMs={600}
       >
-        CT
+        {getInitials(user?.firstName, user?.lastName)}
       </AvatarRadix.Fallback>
     </AvatarRadix.Root>
   );

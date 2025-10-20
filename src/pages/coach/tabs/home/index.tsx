@@ -5,14 +5,17 @@ import PlusWhite from "../../../../assets/icons/plus-white.svg";
 import BookIcon from "../../../../assets/icons/book-purple.svg";
 import MiniBookIcon from "../../../../assets/icons/mini-book.svg";
 import MiniProfile from "../../../../assets/icons/mini-profile.svg";
+import { useAuth } from "../../../../hooks/userAuth";
 
 export function HomeCoach() {
+  const { user } = useAuth();
+
   return (
     <div className="h-full overflow-auto flex flex-col justify-between px-4">
       {/* Topo */}
       <div className="mt-3.5">
         <div className="space-y-3">
-          <h4 className="font-bold text-3xl">Olá, Prof.!</h4>
+          <h4 className="font-bold text-3xl">Olá, Prof. {user?.firstName}!</h4>
           <span className="text-[#4A5565] text-base">
             Acompanhe o progresso dos seus alunos.
           </span>

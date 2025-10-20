@@ -20,8 +20,7 @@ export function LoginForm() {
     try {
       const response = await login(email, password); // login via hook
       // Redirecionar para a tela correta baseada no role do usuário
-      const redirectPath = (response as any)?.redirectPath || "/dashboard";
-      navigate(redirectPath);
+      navigate(response.redirectPath);
     } catch (err) {
       const axiosError = err as AxiosError<{ message: string }>;
       const apiMessage = axiosError.response?.data?.message;

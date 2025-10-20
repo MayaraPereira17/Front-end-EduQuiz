@@ -89,10 +89,39 @@ export const authService: AuthService = {
     localStorage.removeItem('user');
   },
 
-  isAuthenticated: () => !!localStorage.getItem('token'),
+  isAuthenticated: () => {
+    const token = localStorage.getItem('token');
+    if (!token) return false;
+    
+    try {
+      // Verificar se o token não expirou (decodificar JWT)
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Date.now() / 1000;
+      
+      if (payload.exp && payload.exp < now) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return false;
+    }
+  },
 
   getCurrentUser: () => {
     const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    if (!user) return null;
+    
+    try {
+      return JSON.parse(user);
+    } catch (error) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return null;
+    }
   }
 };

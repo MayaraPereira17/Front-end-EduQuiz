@@ -2,7 +2,7 @@ import { Badge } from "../../components/badge";
 import { Avatar } from "../../pages/dashboard/Ranking/avatarComponent";
 import BlueCapIcon from "../../assets/icons/blue-cap.svg";
 import { Settings } from "lucide-react";
-import { useState } from "react";
+import { useAuth } from "../../hooks/userAuth";
 
 interface Props {
   firstCardIcon: React.ReactNode;
@@ -11,7 +11,8 @@ interface Props {
   secondaCardValue: string;
   firstTitleCardValue: string;
   secondTitleCardValue: string;
-  isTeacher?: boolean
+  isTeacher?: boolean;
+  onEditProfile?: () => void;
 }
 
 export function Profile({
@@ -21,15 +22,14 @@ export function Profile({
   secondCardIcon,
   secondTitleCardValue,
   secondaCardValue,
-  isTeacher = true
+  isTeacher = true,
+  onEditProfile
 }: Props) {
-  const [isEditable, setIsEditable] = useState(false)
+  const { user } = useAuth();
 
   const handleEditProfile = () => {
-    setIsEditable(prev => !prev)
+    onEditProfile?.();
   }
-
-  console.log(isEditable)
 
   return (
     <div className="flex flex-col h-full px-4">
@@ -50,7 +50,9 @@ export function Profile({
 
         <div className="flex flex-col w-full">
           <div className="flex items-center gap-1 mb-2">
-            <span className="font-bold text-2xl">Prof. João Silva</span>
+            <span className="font-bold text-2xl">
+              {isTeacher ? "Prof. " : ""}{user?.firstName} {user?.lastName}
+            </span>
 
             {
               isTeacher && (
@@ -67,47 +69,15 @@ export function Profile({
             
           </div>
           <div className="flex flex-col gap-1">
-            {isEditable ? (
-              <>
-              <label className="text-sm">Nome</label>
-              
-              <input
-                  type="text"
-                  placeholder="Carlos Técnico"
-                  className="bg-[#F3F3F5] border border-black/10 py-1 rounded-lg px-3 text-sm text-[#717182]"
-                />
-
-                <label className="text-sm">Email</label>
-
-              <input
-                  type="text"
-                  placeholder="tecnico@demo.com"
-                  className="bg-[#F3F3F5] border border-black/10 py-1 rounded-lg px-3 text-sm text-[#717182]"
-                />
-
-              <label className="text-sm">Empresa</label>
-              <input
-                  type="text"
-                  placeholder="Empresa"
-                  className="bg-[#F3F3F5] border border-black/10 py-1 rounded-lg px-3 text-sm text-[#717182]"
-                />
-              </>
-            ) : (
-              <>
-               <span className="font-normal text-sm text-[#404040]">
-              tecnico@demo.com
+            <span className="font-normal text-sm text-[#404040]">
+              {user?.email}
             </span>
             <span className="font-normal text-sm text-[#404040]">
-              Escola Estadual XYZ
+              Professor de {user?.materia || "Educação"}
             </span>
             <span className="font-normal text-sm text-[#404040]">
-              Matemática
+              {user?.escola || "Instituição de Ensino"}
             </span>
-              
-              </>
-
-            )}
-           
           </div>
         </div>
       </div>

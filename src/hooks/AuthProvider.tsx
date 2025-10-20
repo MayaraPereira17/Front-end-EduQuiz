@@ -11,9 +11,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const currentUser = authService.getCurrentUser();
-    if (currentUser && authService.isAuthenticated()) setUser(currentUser);
-    setLoading(false);
+    try {
+      const currentUser = authService.getCurrentUser();
+      const isAuth = authService.isAuthenticated();
+      
+      if (currentUser && isAuth) {
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+      authService.logout();
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   const login = async (email: string, password: string): Promise<{ redirectPath: string }> => {
@@ -22,8 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await authService.login(email, password);
       setUser(response.user);
       
-      // Retornar o path de redirecionamento baseado no role
-      const redirectPath = getUserRedirectPath(response.user.role);
+      // Retornar o path de redirecionamento baseado no usuário
+      const redirectPath = getUserRedirectPath(response.user);
       return { redirectPath };
     } catch (error) {
       throw error; // Re-throw para que o componente possa capturar
@@ -38,8 +50,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await authService.register(userData);
       setUser(response.user);
       
-      // Retornar o path de redirecionamento baseado no role
-      const redirectPath = getUserRedirectPath(userData.role);
+      // Retornar o path de redirecionamento baseado no usuário
+      const redirectPath = getUserRedirectPath(response.user);
       return { redirectPath };
     } finally {
       setLoading(false);

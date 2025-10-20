@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState("home");
-  const { logout } = useAuth();
+  const { logout, user, isAuthenticated, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
