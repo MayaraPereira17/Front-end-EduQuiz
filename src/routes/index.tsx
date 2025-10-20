@@ -49,7 +49,7 @@ const router = createBrowserRouter([
       { path: "", element: <HomeCoach /> }, // aba Home
       { path: "quizz", element: <MyQuizzesCoach /> }, // aba Quizzes
       { path: "profile", element: <ProfileCoach /> }, // aba Profile
-      { path: "quizz/create-quizz", element: <CreateCoachQuizz /> }, // subrota
+      { path: "create-quizz", element: <CreateCoachQuizz /> }, // subrota
       { path: "quizz/edit-quizz", element: <EditCoachQuizz /> }, // subrota
     ],
   },

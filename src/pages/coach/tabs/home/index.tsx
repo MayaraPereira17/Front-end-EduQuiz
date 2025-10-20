@@ -6,9 +6,23 @@ import BookIcon from "../../../../assets/icons/book-purple.svg";
 import MiniBookIcon from "../../../../assets/icons/mini-book.svg";
 import MiniProfile from "../../../../assets/icons/mini-profile.svg";
 import { useAuth } from "../../../../hooks/userAuth";
+import { useNavigate } from "react-router-dom";
 
 export function HomeCoach() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
+  const handleCreateQuiz = () => {
+    navigate("/coach/create-quizz");
+  };
+
+  const handleViewQuizzes = () => {
+    navigate("/coach/quizz");
+  };
+
+  const handleViewProfile = () => {
+    navigate("/coach/profile");
+  };
 
   return (
     <div className="h-full overflow-auto flex flex-col justify-between px-4">
@@ -34,7 +48,10 @@ export function HomeCoach() {
                 <span className="text-[#4A5565] text-center font-normal">
                   Crie novos quizzes personalizados para suas turmas
                 </span>
-                <button className="flex bg-black gap-4 py-1.5 w-full items-center justify-center text-white rounded-lg">
+                <button 
+                  onClick={handleCreateQuiz}
+                  className="flex bg-black gap-4 py-1.5 w-full items-center justify-center text-white rounded-lg hover:bg-gray-800 transition-colors"
+                >
                   <img src={PlusWhite} alt="" />
                   Novo Quiz
                 </button>
@@ -49,7 +66,10 @@ export function HomeCoach() {
               <span className="text-[#4A5565] text-center font-normal">
                 Visualize e gerencie todos os seus quizzes
               </span>
-              <button className="flex bg-white gap-4 py-1.5 w-full items-center justify-center text-black rounded-lg border border-black/10">
+              <button 
+                onClick={handleViewQuizzes}
+                className="flex bg-white gap-4 py-1.5 w-full items-center justify-center text-black rounded-lg border border-black/10 hover:bg-gray-50 transition-colors"
+              >
                 <img src={MiniBookIcon} alt="" />
                 Ver Quizzes
               </button>
@@ -60,7 +80,10 @@ export function HomeCoach() {
 
       {/* Rodapé fixo ao final */}
       <div className="flex items-center justify-center  mt-6 py-4">
-        <button className="flex p-3 border border-black/10 gap-4 rounded-lg bg-white">
+        <button 
+          onClick={handleViewProfile}
+          className="flex p-3 border border-black/10 gap-4 rounded-lg bg-white hover:bg-gray-50 transition-colors"
+        >
           <img src={MiniProfile} alt="" />
           Ver Perfil
         </button>
