@@ -23,9 +23,11 @@ export function Quiz() {
 
       <div className="">
         <Question
-          question={questionsMock[current].question}
-          options={questionsMock[current].options}
-          correctIndex={questionsMock[current].correctIndex}
+          options={questionsMock[current].options.map((option, index) => ({
+            id: index + 1,
+            text: option,
+            correta: index === questionsMock[current].correctIndex
+          }))}
           onNext={handleNext}
         />
       </div>

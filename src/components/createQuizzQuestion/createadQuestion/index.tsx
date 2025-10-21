@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function CreatedQuestion({ item, questionNumber }: Props) {
-  const { removerQuestao, atualizarQuestao, setRespostaCorreta } = useQuestoesStore();
+  const { removerQuestao, atualizarQuestao } = useQuestoesStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
     pergunta: item.pergunta,

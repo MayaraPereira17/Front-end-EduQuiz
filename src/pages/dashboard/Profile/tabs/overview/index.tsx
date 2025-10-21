@@ -1,5 +1,6 @@
 import { StudentStats } from "../../../../../components/studentStats";
-import { studentService, StudentStats as StudentStatsType } from "../../../../../services/studentService";
+import { studentService } from "../../../../../services/studentService";
+import type { StudentStats as StudentStatsType } from "../../../../../services/studentService";
 import { useState, useEffect } from "react";
 
 export function Overview() {

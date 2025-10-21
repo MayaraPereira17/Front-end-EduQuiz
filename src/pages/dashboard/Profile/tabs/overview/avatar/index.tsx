@@ -10,10 +10,10 @@ interface AvatarProps {
 }
 
 export const Avatar: React.FC<AvatarProps> = ({
-  currentAvatar,
+  currentAvatar: _currentAvatar,
   size = 'md',
-  showUploadButton = false,
-  showColorPicker = false,
+  showUploadButton: _showUploadButton = false,
+  showColorPicker: _showColorPicker = false,
   className = ''
 }) => {
   const { user } = useAuth();

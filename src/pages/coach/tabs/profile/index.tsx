@@ -14,7 +14,7 @@ interface DashboardStats {
 }
 
 export function ProfileCoach() {
-  const { user } = useAuth();
+  const { } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);

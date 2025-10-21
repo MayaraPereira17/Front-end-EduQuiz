@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { studentService, StudentQuiz } from "../../../services/studentService";
+import { studentService } from "../../../services/studentService";
+import type { StudentQuiz } from "../../../services/studentService";
 import { Badge } from "../../../components/badge";
 import { SearchInput } from "../../../components/searchInput";
 import { useNavigate } from "react-router-dom";
@@ -10,10 +11,10 @@ export function QuizList() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchTimeout, setSearchTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  const loadQuizzes = async (busca?: string) => {
+  const loadQuizzes = async (_busca?: string) => {
     try {
       console.log('🔄 QuizList: Iniciando carregamento de quizzes...');
       setLoading(true);
@@ -28,13 +29,16 @@ export function QuizList() {
       console.log('📊 QuizList: Quantidade de quizzes:', quizzesData?.length || 0);
       
       // Ajustar para diferentes estruturas de resposta
-      let quizzesToSet = [];
+      let quizzesToSet: StudentQuiz[] = [];
       if (Array.isArray(quizzesData)) {
         quizzesToSet = quizzesData;
-      } else if (quizzesData?.items && Array.isArray(quizzesData.items)) {
-        quizzesToSet = quizzesData.items;
-      } else if (quizzesData?.data && Array.isArray(quizzesData.data)) {
-        quizzesToSet = quizzesData.data;
+      } else if (quizzesData && typeof quizzesData === 'object') {
+        const dataObj = quizzesData as any;
+        if (dataObj.items && Array.isArray(dataObj.items)) {
+          quizzesToSet = dataObj.items;
+        } else if (dataObj.data && Array.isArray(dataObj.data)) {
+          quizzesToSet = dataObj.data;
+        }
       }
       
       console.log('🎯 QuizList: Quizzes para definir no estado:', quizzesToSet);

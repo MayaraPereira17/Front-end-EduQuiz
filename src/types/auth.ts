@@ -8,6 +8,9 @@ export interface User {
   cpf?: string;
   dataNascimento?: string;
   avatarUrl?: string;
+  avatarColor?: string;
+  materia?: string;
+  escola?: string;
   role: "0" | "1" | "2";
   isActive: boolean;
   createdAt: string;

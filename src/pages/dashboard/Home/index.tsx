@@ -2,7 +2,8 @@ import trophyImg from "../../../assets/icons/trophy.svg";
 import playImg from "../../../assets/play.png";
 import { StudentStats } from "../../../components/studentStats";
 import { useAuth } from "../../../hooks/userAuth";
-import { studentService, StudentDashboard as StudentDashboardType } from "../../../services/studentService";
+import { studentService } from "../../../services/studentService";
+import type { StudentDashboard as StudentDashboardType } from "../../../services/studentService";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 

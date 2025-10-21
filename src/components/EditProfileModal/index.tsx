@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Save, Camera } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import { useAuth } from '../../hooks/userAuth';
 import { AvatarColorPicker } from '../AvatarColorPicker';
 
@@ -89,7 +89,7 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
   };
 
-  const handleAvatarUpdate = (avatarUrl: string) => {
+  const handleAvatarUpdate = (_avatarUrl: string) => {
     // O avatar já é atualizado automaticamente pelo componente AvatarUpload
     setSuccess(true);
     setTimeout(() => setSuccess(false), 2000);
