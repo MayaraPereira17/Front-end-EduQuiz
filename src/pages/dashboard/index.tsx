@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as Tabs from "@radix-ui/react-tabs";
 import { AvatarDemo } from "../../components/avatar";
 import Logo from "../../components/logo";
@@ -8,17 +8,26 @@ import { QuizList } from "./QuizList";
 import { Ranking } from "./Ranking";
 import { Profile } from "./Profile";
 import { useAuth } from "../../hooks/userAuth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState("home");
-  const { logout, user, isAuthenticated, loading } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
+
+  // Verificar se há parâmetro 'tab' na URL e definir aba ativa
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['home', 'quiz', 'ranking', 'profile'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   return (
     <Tabs.Root

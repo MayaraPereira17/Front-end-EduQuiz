@@ -12,6 +12,8 @@ export interface StudentQuiz {
   totalQuestoes: number;
   pontuacaoTotal: number;
   disponivel: boolean;
+  quizConcluido: boolean;        // ← NOVO: indica se o quiz já foi concluído
+  tentativasRestantes: number;   // ← NOVO: número de tentativas restantes
 }
 
 export interface StudentQuizDetail {
@@ -285,7 +287,9 @@ export const studentService = {
             tempoLimite: 30,
             totalQuestoes: 10,
             pontuacaoTotal: 100,
-            disponivel: true
+            disponivel: true,
+            quizConcluido: false,
+            tentativasRestantes: 1
           },
           {
             id: 2,
@@ -296,7 +300,9 @@ export const studentService = {
             tempoLimite: 45,
             totalQuestoes: 15,
             pontuacaoTotal: 150,
-            disponivel: true
+            disponivel: true,
+            quizConcluido: false,
+            tentativasRestantes: 1
           }
         ];
         
@@ -339,7 +345,8 @@ export const studentService = {
     try {
       console.log('🔄 Submetendo tentativa de quiz...');
       console.log('📊 Quiz ID:', quizId);
-      console.log('📊 Tentativa:', attempt);
+      console.log('📊 Tentativa:', JSON.stringify(attempt, null, 2));
+      console.log('📊 URL:', `/api/aluno/quizzes/${quizId}/responder`);
       
       const response = await api.post(`/api/aluno/quizzes/${quizId}/responder`, attempt);
       
@@ -354,7 +361,8 @@ export const studentService = {
         message: error.message,
         status: error.response?.status,
         statusText: error.response?.statusText,
-        data: error.response?.data
+        data: error.response?.data,
+        url: `/api/aluno/quizzes/${quizId}/responder`
       });
       
       // Backend foi ajustado - removendo tratamento específico de ranking
@@ -420,48 +428,35 @@ export const studentService = {
   },
 
 
-  async getAttemptProgress(tentativaId: number): Promise<{
-    questaoAtual: number;
-    totalQuestoes: number;
-    percentualCompleto: number;
-    pontuacaoAtual: number;
-    tempoGasto: number;
-  }> {
-    const response = await api.get(`/api/aluno/tentativas/${tentativaId}/progresso`);
-    return response.data.data || response.data;
-  },
+  // Métodos removidos - não usamos mais endpoints de tentativas individuais
+  // async getAttemptProgress(tentativaId: number): Promise<{...}> {
+  //   const response = await api.get(`/api/aluno/tentativas/${tentativaId}/progresso`);
+  //   return response.data.data || response.data;
+  // },
 
-  async finishQuiz(tentativaId: number): Promise<{
-    tentativaId: number;
-    pontuacaoFinal: number;
-    pontuacaoMaxima: number;
-    percentualAcerto: number;
-    tempoGasto: number;
-    totalQuestoes: number;
-    respostasCorretas: number;
-    respostasErradas: number;
-    dataConclusao: string;
-  }> {
-    const response = await api.post(`/api/aluno/tentativas/${tentativaId}/finalizar`);
-    return response.data.data || response.data;
-  },
+  // async finishQuiz(tentativaId: number): Promise<{...}> {
+  //   const response = await api.post(`/api/aluno/tentativas/${tentativaId}/finalizar`);
+  //   return response.data.data || response.data;
+  // },
 
   // Métodos de compatibilidade (para não quebrar código existente)
   async getStudentStats(): Promise<StudentDashboard> {
     return this.getDashboard();
   },
 
-  async getQuizResult(tentativaId: number): Promise<QuizResult> {
-    const response = await api.get(`/api/aluno/tentativas/${tentativaId}`);
-    return response.data.data || response.data;
-  },
+  // Método removido - não usamos mais endpoints de tentativas individuais
+  // async getQuizResult(tentativaId: number): Promise<QuizResult> {
+  //   const response = await api.get(`/api/aluno/tentativas/${tentativaId}`);
+  //   return response.data.data || response.data;
+  // },
 
-  async getAttemptHistory(params?: any): Promise<{ items: QuizResult[], currentPage: number, pageSize: number, totalPages: number, totalCount: number }> {
-    const response = await api.get('/api/aluno/tentativas', { params });
-    return response.data.data || response.data;
-  },
+  // Método removido - não usamos mais endpoints de tentativas individuais
+  // async getAttemptHistory(params?: any): Promise<{ items: QuizResult[], currentPage: number, pageSize: number, totalPages: number, totalCount: number }> {
+  //   const response = await api.get('/api/aluno/tentativas', { params });
+  //   return response.data.data || response.data;
+  // },
 
-  // === MÉTODOS PARA MODO DINÂMICO (mantendo layout atual) ===
+  // === MÉTODOS PARA MODO DINÂMICO ===
 
   // Iniciar quiz no modo dinâmico
   async startDynamicQuiz(quizId: number): Promise<QuizStartResponse> {
@@ -478,7 +473,6 @@ export const studentService = {
       });
       return response.data.data || response.data;
     } catch (error: any) {
-      // Backend foi ajustado - removendo tratamento específico de ranking
       throw error;
     }
   },

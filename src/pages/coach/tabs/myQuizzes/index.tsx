@@ -110,7 +110,7 @@ export function MyQuizzesCoach() {
   }, [searchTimeout]);
 
   const onHandleNewQuizz = () => {
-    navigate("/coach/quizz/create-quizz");
+    navigate("/coach/create-quizz");
   };
 
   const handleEditQuiz = (quizId: string) => {

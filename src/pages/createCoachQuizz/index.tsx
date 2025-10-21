@@ -25,6 +25,7 @@ export function CreateCoachQuizz() {
     questoes,
     setTitulo,
     setDescricao,
+    setDificuldade,
     setTempoLimite,
     resetQuiz,
   } = useQuestoesStore();
@@ -255,7 +256,19 @@ export function CreateCoachQuizz() {
                 />
               </div>
 
-              {/* Campo de dificuldade removido - não existe no banco */}
+              <div className="flex flex-col">
+                <span className="text-sm">Dificuldade*</span>
+                <CustomSelect
+                  value={dificuldade}
+                  onValueChange={(value) => setDificuldade(value as "easy" | "medium" | "hard" | "")}
+                  placeholder="Selecione a dificuldade"
+                  options={[
+                    { value: "easy", label: "Fácil" },
+                    { value: "medium", label: "Médio" },
+                    { value: "hard", label: "Difícil" }
+                  ]}
+                />
+              </div>
 
               <div className="flex flex-col">
                 <span className="text-sm">Tempo Limite (minutos)</span>

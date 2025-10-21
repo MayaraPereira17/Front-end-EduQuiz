@@ -25,8 +25,7 @@ export function QuizAttempt() {
   const [quizStarted, setQuizStarted] = useState(false);
   
   // Novos estados para modo dinâmico
-  const [useDynamicMode] = useState(true); // Ativado por padrão
-  const [tentativaId, setTentativaId] = useState<number | null>(null);
+  const [useDynamicMode] = useState(true); // Reativado para feedback instantâneo
   const [mostrandoFeedback, setMostrandoFeedback] = useState(false);
   const [feedback, setFeedback] = useState<{
     correto: boolean;
@@ -53,52 +52,43 @@ export function QuizAttempt() {
       setLoading(true);
       setError(null);
       
+      // Sempre carregar quiz tradicional (com todas as questões)
+      // O modo dinâmico será simulado no frontend
+      const quizData = await studentService.getQuizForAttempt(parseInt(quizId));
+      console.log('Quiz carregado:', quizData.titulo, '- Questões:', quizData.questoes?.length || 0);
+      
+      setQuiz(quizData);
+      setQuestions(quizData.questoes || []);
+      
+      // Converter minutos para segundos
+      const timeInSeconds = (quizData.tempoLimite || 30) * 60;
+      setTimeLeft(timeInSeconds);
+      setQuizStarted(true);
+      
+      // Se modo dinâmico, mostrar apenas a primeira questão
       if (useDynamicMode) {
-        // Modo dinâmico: iniciar quiz
-        const response: any = await (studentService as any).startDynamicQuiz(parseInt(quizId));
-        
-        setTentativaId(response.tentativaId);
-        setQuestions([response.questaoAtual]); // Mostrar apenas a questão atual
-        setProgresso(response.progresso);
-        setQuizStarted(true);
-        
-        // Criar um quiz mock para evitar erro de "quiz não encontrado"
-        const mockQuiz = {
-          id: parseInt(quizId),
-          titulo: response.tituloQuiz || 'Quiz',
-          descricao: 'Quiz em andamento',
-          categoria: { id: 1, nome: 'Geral' },
-          dificuldade: 'Media',
-          tempoLimite: 30, // 30 minutos por questão
-          maxTentativas: 3,
-          tentativasRestantes: 3,
-          totalQuestoes: response.progresso.totalQuestoes,
-          criadoPor: 'Sistema',
-          dataCriacao: new Date().toISOString(),
-          questoes: [response.questaoAtual]
-        };
-        
-        setQuiz(mockQuiz);
-        
-        // Inicializar timer (usar tempo padrão de 30 minutos por questão)
-        setTimeLeft(30 * 60); // 30 minutos por questão
-      } else {
-        // Modo tradicional (mantido)
-        const quizData = await studentService.getQuizForAttempt(parseInt(quizId));
-        console.log('Quiz carregado:', quizData.titulo, '- Questões:', quizData.questoes?.length || 0);
-        
-        setQuiz(quizData);
-        setQuestions(quizData.questoes || []);
-        
-        // Converter minutos para segundos
-        const timeInSeconds = (quizData.tempoLimite || 30) * 60;
-        setTimeLeft(timeInSeconds);
-        setQuizStarted(true);
+        setProgresso({
+          questaoAtual: 1,
+          totalQuestoes: quizData.questoes?.length || 0,
+          percentualCompleto: 0,
+          pontuacaoAtual: 0,
+          tempoGasto: 0
+        });
       }
       
     } catch (error: any) {
       console.error("Erro ao carregar quiz:", error);
-      setError("Erro ao carregar quiz. Tente novamente.");
+      
+      // Tratamento específico para quiz já concluído
+      if (error.response?.status === 400 || error.response?.status === 409) {
+        setError("Este quiz já foi concluído. Você só pode fazer cada quiz uma vez.");
+        // Redirecionar para a lista de quizzes após 3 segundos
+        setTimeout(() => {
+          navigate('/dashboard/quizzes');
+        }, 3000);
+      } else {
+        setError("Erro ao carregar quiz. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -118,59 +108,64 @@ export function QuizAttempt() {
   }, [timeLeft, quizCompleted, submitting, quizStarted]);
 
   const handleAnswer = async (questionId: number, optionId: number) => {
-    if (useDynamicMode && tentativaId) {
-      // Modo dinâmico: enviar resposta imediatamente
-      try {
-        setSubmitting(true);
-        
-        const response: any = await (studentService as any).answerQuestion(
-          tentativaId,
-          questionId,
-          optionId
-        );
-        
-        // Mostrar feedback
-        setFeedback({
-          correto: response.respostaCorreta,
-          pontosGanhos: response.pontosGanhos,
-          respostaCorretaTexto: response.respostaCorretaTexto,
-          mensagem: response.feedback
-        });
-        setMostrandoFeedback(true);
-        
-        // Verificar se quiz foi concluído
-        if (response.quizConcluido) {
-          setQuizCompleted(true);
-          setTentativaId(response.resultadoFinal?.tentativaId || tentativaId);
-          setTimeLeft(0);
-        } else if (response.proximaQuestao) {
-          // Preparar próxima questão após 2 segundos
-          setTimeout(() => {
-            setQuestions([response.proximaQuestao!]);
-            setMostrandoFeedback(false);
-            setFeedback(null);
-            
-            // Atualizar progresso manualmente
-            setProgresso(prev => ({
-              ...prev,
-              questaoAtual: prev.questaoAtual + 1,
-              pontuacaoAtual: prev.pontuacaoAtual + (response.respostaCorreta ? response.pontosGanhos : 0),
-              percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
-            }));
-            
-            // Reiniciar timer para próxima questão (30 minutos)
-            setTimeLeft(30 * 60);
-          }, 2000);
-        }
-        
-      } catch (err: any) {
-        console.error('Erro ao responder questão:', err);
-        
-        // Backend foi ajustado - não precisamos mais do tratamento específico de ranking
-        setError(err.response?.data?.message || 'Erro ao responder questão');
-      } finally {
-        setSubmitting(false);
+    if (useDynamicMode) {
+      // Modo dinâmico simulado no frontend
+      // Encontrar a questão atual para verificar se a resposta está correta
+      const currentQuestion = questions.find(q => q.id === questionId);
+      const selectedOption = currentQuestion?.opcoes.find(opt => opt.id === optionId);
+      const correctOption = currentQuestion?.opcoes.find(opt => opt.correta);
+      
+      // Debug: verificar estrutura das opções
+      console.log('🔍 Debug - Questão atual:', currentQuestion);
+      console.log('🔍 Debug - Opções:', currentQuestion?.opcoes);
+      console.log('🔍 Debug - Opção correta:', correctOption);
+      
+      // Simular feedback instantâneo
+      const isCorrect = selectedOption?.correta || false;
+      const pontosGanhos = isCorrect ? 10 : 0; // Pontos fixos por questão
+      
+      // Obter o texto da resposta correta
+      let respostaCorretaTexto = correctOption?.textoOpcao;
+      
+      // Se não encontrou a opção correta, mostrar todas as opções
+      if (!respostaCorretaTexto && currentQuestion?.opcoes) {
+        respostaCorretaTexto = currentQuestion.opcoes.map(opt => opt.textoOpcao).join(', ');
+        console.log('⚠️ Opção correta não marcada, mostrando todas:', respostaCorretaTexto);
       }
+      
+      if (!respostaCorretaTexto) {
+        respostaCorretaTexto = 'Resposta correta não encontrada';
+      }
+      
+      console.log('🔍 Debug - Texto da resposta correta:', respostaCorretaTexto);
+      
+      setFeedback({
+        correto: isCorrect,
+        pontosGanhos: pontosGanhos,
+        respostaCorretaTexto: respostaCorretaTexto,
+        mensagem: isCorrect ? 'Parabéns! Você acertou!' : 'Que pena! Tente novamente na próxima.'
+      });
+      setMostrandoFeedback(true);
+      
+      // Salvar resposta
+      const newAnswers = [...answers];
+      const existingAnswerIndex = newAnswers.findIndex(a => a.questaoId === questionId);
+      
+      if (existingAnswerIndex >= 0) {
+        newAnswers[existingAnswerIndex] = { questaoId: questionId, opcaoSelecionadaId: optionId };
+      } else {
+        newAnswers.push({ questaoId: questionId, opcaoSelecionadaId: optionId });
+      }
+      
+      setAnswers(newAnswers);
+      
+      // Atualizar progresso
+      setProgresso(prev => ({
+        ...prev,
+        pontuacaoAtual: prev.pontuacaoAtual + pontosGanhos,
+        percentualCompleto: ((prev.questaoAtual) / prev.totalQuestoes) * 100
+      }));
+      
     } else {
       // Modo tradicional (mantido)
       const newAnswers = [...answers];
@@ -187,10 +182,30 @@ export function QuizAttempt() {
   };
 
   const handleNext = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+    if (useDynamicMode) {
+      // No modo dinâmico, limpar feedback e ir para próxima questão
+      setMostrandoFeedback(false);
+      setFeedback(null);
+      
+      // Atualizar progresso
+      setProgresso(prev => ({
+        ...prev,
+        questaoAtual: prev.questaoAtual + 1,
+        percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
+      }));
+      
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        handleSubmitQuiz();
+      }
     } else {
-      handleSubmitQuiz();
+      // Modo tradicional
+      if (currentQuestion < questions.length - 1) {
+        setCurrentQuestion(currentQuestion + 1);
+      } else {
+        handleSubmitQuiz();
+      }
     }
   };
 
@@ -205,31 +220,39 @@ export function QuizAttempt() {
 
     try {
       console.log('🔄 Submetendo quiz - Respostas:', answers.length);
+      console.log('📊 Respostas detalhadas:', JSON.stringify(answers, null, 2));
+      console.log('📊 Quiz ID:', quizId);
       
       setSubmitting(true);
       const attempt = {
         respostas: answers
       };
 
+      console.log('📊 Tentativa a ser enviada:', JSON.stringify(attempt, null, 2));
       const result = await studentService.submitQuizAttempt(parseInt(quizId!), attempt);
       
       console.log('✅ Quiz submetido com sucesso!');
       console.log('📊 Resultado:', result);
-      console.log('🔄 Redirecionando para:', `/dashboard/quiz/result/${result.tentativaId}`);
       
       setQuizCompleted(true);
       
-      // Redirecionar para resultado após 3 segundos
+      // Redirecionar para dashboard (aba quiz) após 2 segundos
       setTimeout(() => {
-        navigate(`/dashboard/quiz/result/${result.tentativaId}`);
-      }, 3000);
+        navigate('/dashboard?tab=quiz');
+      }, 2000);
 
     } catch (error: any) {
       console.error("Erro ao submeter quiz:", error);
+      console.error("Status do erro:", error.response?.status);
+      console.error("Mensagem do erro:", error.response?.data);
       
-      // Tratamento específico para erro 409
-      if (error.response?.status === 409) {
+      // Tratamento específico para diferentes erros
+      if (error.response?.status === 500) {
+        setError("Erro interno no servidor ao processar suas respostas. Por favor, tente novamente ou entre em contato com o suporte.");
+      } else if (error.response?.status === 409) {
         setError("Erro no servidor: Conflito com o sistema de ranking. O quiz foi processado, mas pode haver problemas na atualização do ranking.");
+      } else if (error.response?.status === 400) {
+        setError(error.response?.data?.message || "Dados inválidos. Verifique suas respostas e tente novamente.");
       } else {
         setError("Erro ao submeter quiz. Tente novamente.");
       }
@@ -250,16 +273,34 @@ export function QuizAttempt() {
     loadQuiz();
   }, [quizId]);
 
-  // Redirecionar automaticamente para o resultado quando quiz for concluído
+  // Redirecionar automaticamente para o dashboard (aba quiz) quando quiz for concluído
   useEffect(() => {
-    if (quizCompleted && tentativaId) {
+    if (quizCompleted) {
       const timer = setTimeout(() => {
-        navigate(`/dashboard/quiz/result/${tentativaId}`);
+        navigate('/dashboard?tab=quiz');
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [quizCompleted, tentativaId, navigate]);
+  }, [quizCompleted, navigate]);
+
+  // Aviso de encerramento se fechar a página durante o quiz
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      // Só mostrar aviso se o quiz foi iniciado mas não foi concluído
+      if (quizStarted && !quizCompleted && !submitting) {
+        e.preventDefault();
+        e.returnValue = "⚠️ ATENÇÃO: Se você fechar esta página, o quiz será automaticamente encerrado!";
+        return "⚠️ ATENÇÃO: Se você fechar esta página, o quiz será automaticamente encerrado!";
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [quizStarted, quizCompleted, submitting]);
 
   if (loading) {
     return (
@@ -402,6 +443,7 @@ rafted        {/* Points and Progress */}
           isFirst={currentQuestion === 0}
           isLast={currentQuestion === questions.length - 1}
           submitting={submitting}
+          showFeedback={!useDynamicMode} // Não mostrar feedback interno no modo dinâmico
         />
 
         {/* Feedback do Modo Dinâmico */}

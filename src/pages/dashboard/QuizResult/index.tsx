@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { studentService, QuizResult as QuizResultType } from "../../../services/studentService";
-import { CheckCircle, XCircle, Clock, Trophy, RotateCcw, Home } from "lucide-react";
+import type { QuizResult as QuizResultType } from "../../../services/studentService";
+import { CheckCircle, XCircle, Trophy, RotateCcw, Home } from "lucide-react";
 
 export function QuizResult() {
   const { tentativaId } = useParams<{ tentativaId: string }>();
@@ -23,12 +23,24 @@ export function QuizResult() {
       
       setLoading(true);
       setError(null);
-      const resultData = await studentService.getQuizResult(parseInt(tentativaId));
       
-      console.log('✅ Resultado carregado com sucesso!');
-      console.log('📊 Dados do resultado:', resultData);
+      // Buscar resultado do localStorage (vem da submissão do quiz)
+      const cachedResult = localStorage.getItem(`quiz_result_${tentativaId}`);
+      if (cachedResult) {
+        console.log('✅ Resultado encontrado no cache!');
+        const resultData = JSON.parse(cachedResult);
+        console.log('📊 Dados do resultado (cache):', resultData);
+        setResult(resultData);
+        
+        // Limpar do localStorage após usar
+        localStorage.removeItem(`quiz_result_${tentativaId}`);
+        setLoading(false);
+        return;
+      }
       
-      setResult(resultData);
+      // Se não encontrou no cache, mostrar erro (não temos endpoint para buscar resultado individual)
+      console.log('❌ Resultado não encontrado no cache');
+      setError("Resultado do quiz não encontrado. Por favor, tente fazer o quiz novamente.");
     } catch (error: any) {
       console.error("❌ Erro ao carregar resultado:", error);
       setError("Erro ao carregar resultado do quiz. Tente novamente.");

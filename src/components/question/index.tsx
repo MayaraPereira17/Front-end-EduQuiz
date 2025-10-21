@@ -12,6 +12,7 @@ interface QuestionProps {
   isFirst?: boolean;
   isLast?: boolean;
   submitting?: boolean;
+  showFeedback?: boolean; // Controla se deve mostrar feedback interno
 }
 
 export const Question: React.FC<QuestionProps> = ({
@@ -23,6 +24,7 @@ export const Question: React.FC<QuestionProps> = ({
   isFirst = false,
   isLast = false,
   submitting = false,
+  showFeedback = true,
 }) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -49,7 +51,7 @@ export const Question: React.FC<QuestionProps> = ({
   return (
     <div className="w-full space-y-4">
 
-      {confirmed && (
+      {confirmed && showFeedback && (
         <div
           className={cn(
             "mt-4 text-sm font-medium px-5 py-6 rounded-2xl flex flex-col gap-3",

@@ -69,7 +69,15 @@ export function QuizList() {
   };
 
   const handleStartQuiz = (quizId: number) => {
-    navigate(`/dashboard/quiz/${quizId}`);
+    // Aviso antes de iniciar o quiz
+    const confirmado = window.confirm(
+      "⚠️ ATENÇÃO: Se você fechar esta página durante o quiz, a tentativa será automaticamente encerrada!\n\n" +
+      "Deseja continuar?"
+    );
+    
+    if (confirmado) {
+      navigate(`/dashboard/quiz/${quizId}`);
+    }
   };
 
   const getDifficultyColor = (dificuldade: string) => {
@@ -235,12 +243,22 @@ export function QuizList() {
                 </div>
 
                 {/* Start Button */}
-                <button
-                  onClick={() => handleStartQuiz(quiz.id)}
-                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
-                >
-                  Iniciar Quiz
-                </button>
+                {quiz.quizConcluido ? (
+                  <div className="w-full bg-green-100 text-green-800 py-3 rounded-lg font-semibold text-center border border-green-300">
+                    ✅ FEITO
+                  </div>
+                ) : quiz.tentativasRestantes > 0 ? (
+                  <button
+                    onClick={() => handleStartQuiz(quiz.id)}
+                    className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+                  >
+                    Iniciar Quiz
+                  </button>
+                ) : (
+                  <div className="w-full bg-gray-100 text-gray-500 py-3 rounded-lg font-semibold text-center border border-gray-300">
+                    🔒 Indisponível
+                  </div>
+                )}
               </div>
             ))}
           </div>
