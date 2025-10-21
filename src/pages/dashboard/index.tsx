@@ -4,7 +4,7 @@ import { AvatarDemo } from "../../components/avatar";
 import Logo from "../../components/logo";
 import { TabsTrigger } from "../../components/tabsTrigger";
 import { Home } from "./Home";
-import { Quiz } from "./Quiz";
+import { QuizList } from "./QuizList";
 import { Ranking } from "./Ranking";
 import { Profile } from "./Profile";
 import { useAuth } from "../../hooks/userAuth";
@@ -54,7 +54,7 @@ export function Dashboard() {
           <Home />
         </Tabs.Content>
         <Tabs.Content value="quiz" className="h-full overflow-auto">
-          <Quiz />
+          <QuizList />
         </Tabs.Content>
         <Tabs.Content value="ranking" className="h-full overflow-auto">
           <Ranking />
