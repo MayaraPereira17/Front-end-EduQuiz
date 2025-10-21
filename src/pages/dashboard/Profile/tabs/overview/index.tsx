@@ -16,11 +16,11 @@ export function Overview() {
       console.error("Erro ao carregar estatísticas:", error);
       setStats({
         quizzesCompletos: 0,
-        totalPontos: 0,
+        pontos: 0,
         mediaGeral: 0,
         posicaoRanking: 0,
-        tempoEstudo: 0,
-        quizzesDisponiveis: 0,
+        sequencia: 0,
+        totalUsuarios: 0,
         quizzesRecentes: [],
       });
     } finally {
@@ -59,7 +59,7 @@ export function Overview() {
       <StudentStats 
         item={{
           img: "star" as any,
-          value: stats?.totalPontos || 0,
+          value: stats?.pontos || 0,
           description: "Total de pontos"
         }} 
       />
