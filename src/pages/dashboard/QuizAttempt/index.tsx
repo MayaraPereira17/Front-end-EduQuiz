@@ -26,6 +26,7 @@ export function QuizAttempt() {
   
   // Novos estados para modo dinâmico
   const [useDynamicMode] = useState(true); // Reativado para feedback instantâneo
+  const [tentativaId, setTentativaId] = useState<number | null>(null);
   const [mostrandoFeedback, setMostrandoFeedback] = useState(false);
   const [feedback, setFeedback] = useState<{
     correto: boolean;
@@ -33,6 +34,8 @@ export function QuizAttempt() {
     respostaCorretaTexto: string;
     mensagem: string;
   } | null>(null);
+  const [correctOptionId, setCorrectOptionId] = useState<number | null>(null);
+  const [readyToFinalize, setReadyToFinalize] = useState(false);
   const [progresso, setProgresso] = useState({
     questaoAtual: 0,
     totalQuestoes: 0,
@@ -52,28 +55,47 @@ export function QuizAttempt() {
       setLoading(true);
       setError(null);
       
-      // Sempre carregar quiz tradicional (com todas as questões)
-      // O modo dinâmico será simulado no frontend
-      const quizData = await studentService.getQuizForAttempt(parseInt(quizId));
-      console.log('Quiz carregado:', quizData.titulo, '- Questões:', quizData.questoes?.length || 0);
-      
-      setQuiz(quizData);
-      setQuestions(quizData.questoes || []);
-      
-      // Converter minutos para segundos
-      const timeInSeconds = (quizData.tempoLimite || 30) * 60;
-      setTimeLeft(timeInSeconds);
-      setQuizStarted(true);
-      
-      // Se modo dinâmico, mostrar apenas a primeira questão
       if (useDynamicMode) {
-        setProgresso({
-          questaoAtual: 1,
-          totalQuestoes: quizData.questoes?.length || 0,
-          percentualCompleto: 0,
-          pontuacaoAtual: 0,
-          tempoGasto: 0
-        });
+        // Modo dinâmico real: iniciar quiz
+        const response = await studentService.startDynamicQuiz(parseInt(quizId));
+        
+        setTentativaId(response.tentativaId);
+        setQuestions([response.questaoAtual]); // Mostrar apenas a questão atual
+        setProgresso(response.progresso);
+        setQuizStarted(true);
+        
+        // Criar um quiz mock para evitar erro de "quiz não encontrado"
+        const mockQuiz = {
+          id: parseInt(quizId),
+          titulo: response.tituloQuiz || 'Quiz',
+          descricao: 'Quiz em andamento',
+          categoria: { id: 1, nome: 'Geral' },
+          dificuldade: 'Media',
+          tempoLimite: 30, // 30 minutos por questão
+          maxTentativas: 3,
+          tentativasRestantes: 3,
+          totalQuestoes: response.progresso.totalQuestoes,
+          criadoPor: 'Sistema',
+          dataCriacao: new Date().toISOString(),
+          questoes: [response.questaoAtual]
+        };
+        
+        setQuiz(mockQuiz);
+        
+        // Inicializar timer (usar tempo padrão de 30 minutos por questão)
+        setTimeLeft(30 * 60); // 30 minutos por questão
+      } else {
+        // Modo tradicional (mantido)
+        const quizData = await studentService.getQuizForAttempt(parseInt(quizId));
+        console.log('Quiz carregado:', quizData.titulo, '- Questões:', quizData.questoes?.length || 0);
+        
+        setQuiz(quizData);
+        setQuestions(quizData.questoes || []);
+        
+        // Converter minutos para segundos
+        const timeInSeconds = (quizData.tempoLimite || 30) * 60;
+        setTimeLeft(timeInSeconds);
+        setQuizStarted(true);
       }
       
     } catch (error: any) {
@@ -108,96 +130,134 @@ export function QuizAttempt() {
   }, [timeLeft, quizCompleted, submitting, quizStarted]);
 
   const handleAnswer = async (questionId: number, optionId: number) => {
-    if (useDynamicMode) {
-      // Modo dinâmico simulado no frontend
-      // Encontrar a questão atual para verificar se a resposta está correta
-      const currentQuestion = questions.find(q => q.id === questionId);
-      const selectedOption = currentQuestion?.opcoes.find(opt => opt.id === optionId);
-      const correctOption = currentQuestion?.opcoes.find(opt => opt.correta);
-      
-      // Debug: verificar estrutura das opções
-      console.log('🔍 Debug - Questão atual:', currentQuestion);
-      console.log('🔍 Debug - Opções:', currentQuestion?.opcoes);
-      console.log('🔍 Debug - Opção correta:', correctOption);
-      
-      // Simular feedback instantâneo
-      const isCorrect = selectedOption?.correta || false;
-      const pontosGanhos = isCorrect ? 10 : 0; // Pontos fixos por questão
-      
-      // Obter o texto da resposta correta
-      let respostaCorretaTexto = correctOption?.textoOpcao;
-      
-      // Se não encontrou a opção correta, mostrar todas as opções
-      if (!respostaCorretaTexto && currentQuestion?.opcoes) {
-        respostaCorretaTexto = currentQuestion.opcoes.map(opt => opt.textoOpcao).join(', ');
-        console.log('⚠️ Opção correta não marcada, mostrando todas:', respostaCorretaTexto);
-      }
-      
-      if (!respostaCorretaTexto) {
-        respostaCorretaTexto = 'Resposta correta não encontrada';
-      }
-      
-      console.log('🔍 Debug - Texto da resposta correta:', respostaCorretaTexto);
-      
-      setFeedback({
-        correto: isCorrect,
-        pontosGanhos: pontosGanhos,
-        respostaCorretaTexto: respostaCorretaTexto,
-        mensagem: isCorrect ? 'Parabéns! Você acertou!' : 'Que pena! Tente novamente na próxima.'
-      });
-      setMostrandoFeedback(true);
-      
-      // Salvar resposta
-      const newAnswers = [...answers];
-      const existingAnswerIndex = newAnswers.findIndex(a => a.questaoId === questionId);
-      
-      if (existingAnswerIndex >= 0) {
-        newAnswers[existingAnswerIndex] = { questaoId: questionId, opcaoSelecionadaId: optionId };
-      } else {
-        newAnswers.push({ questaoId: questionId, opcaoSelecionadaId: optionId });
-      }
-      
-      setAnswers(newAnswers);
-      
-      // Atualizar progresso
-      setProgresso(prev => ({
-        ...prev,
-        pontuacaoAtual: prev.pontuacaoAtual + pontosGanhos,
-        percentualCompleto: ((prev.questaoAtual) / prev.totalQuestoes) * 100
-      }));
-      
+    console.log('🖱️ Clique na opção detectado:', { questionId, optionId });
+    console.log('📊 Questão atual:', currentQuestion);
+    console.log('📊 Questões disponíveis:', questions.length);
+    console.log('📊 Dados da questão atual:', questions[currentQuestion]);
+    
+    // Sempre apenas salvar resposta (modo dinâmico e tradicional)
+    const newAnswers = [...answers];
+    const existingAnswerIndex = newAnswers.findIndex(a => a.questaoId === questionId);
+    
+    if (existingAnswerIndex >= 0) {
+      newAnswers[existingAnswerIndex] = { questaoId: questionId, opcaoSelecionadaId: optionId };
     } else {
-      // Modo tradicional (mantido)
-      const newAnswers = [...answers];
-      const existingAnswerIndex = newAnswers.findIndex(a => a.questaoId === questionId);
-      
-      if (existingAnswerIndex >= 0) {
-        newAnswers[existingAnswerIndex] = { questaoId: questionId, opcaoSelecionadaId: optionId };
-      } else {
-        newAnswers.push({ questaoId: questionId, opcaoSelecionadaId: optionId });
+      newAnswers.push({ questaoId: questionId, opcaoSelecionadaId: optionId });
+    }
+    
+    console.log('💾 Respostas atualizadas:', newAnswers);
+    setAnswers(newAnswers);
+  };
+
+  const handleConfirmAnswer = async (questionId: number, optionId: number) => {
+    if (useDynamicMode && tentativaId) {
+      // Modo dinâmico: responder após confirmar
+      try {
+        setSubmitting(true);
+        
+        console.log('🔄 Enviando resposta para API...', { tentativaId, questionId, optionId });
+        
+        const response = await studentService.answerQuestion(
+          tentativaId,
+          questionId,
+          optionId
+        );
+        
+        console.log('✅ Resposta da API recebida:', response);
+        
+        // Encontrar o ID da opção correta baseado no texto da resposta
+        const correctOption = currentQuestionData.opcoes.find(opt => 
+          opt.textoOpcao === response.respostaCorretaTexto
+        );
+        if (correctOption) {
+          setCorrectOptionId(correctOption.id);
+          console.log('🎯 Opção correta encontrada:', correctOption.id);
+        } else {
+          console.log('⚠️ Opção correta não encontrada para:', response.respostaCorretaTexto);
+        }
+        
+        // Mostrar feedback após confirmar
+        setFeedback({
+          correto: response.respostaCorreta,
+          pontosGanhos: response.pontosGanhos,
+          respostaCorretaTexto: response.respostaCorretaTexto,
+          mensagem: response.feedback
+        });
+        setMostrandoFeedback(true);
+        
+        console.log('📊 Feedback configurado:', {
+          correto: response.respostaCorreta,
+          pontosGanhos: response.pontosGanhos,
+          respostaCorretaTexto: response.respostaCorretaTexto
+        });
+        
+        // Verificar se quiz foi concluído
+        if (response.quizConcluido) {
+          // Quiz concluído - mostrar feedback e aguardar usuário finalizar
+          console.log('🏁 Quiz concluído - mostrando feedback e aguardando finalização');
+          setTentativaId(response.resultadoFinal?.tentativaId || tentativaId);
+          setReadyToFinalize(true); // Marcar que está pronto para finalizar
+          console.log('✅ readyToFinalize definido como true');
+          // Não finalizar automaticamente - usuário deve clicar em "Finalizar Teste"
+        } else if (response.proximaQuestao) {
+          // Passar automaticamente para próxima questão após 2 segundos
+          console.log('⏭️ Passando para próxima questão em 2 segundos...');
+          setTimeout(() => {
+            setQuestions([response.proximaQuestao!]);
+            setMostrandoFeedback(false);
+            setFeedback(null);
+            setCorrectOptionId(null); // Limpar opção correta para próxima questão
+            setReadyToFinalize(false); // Resetar estado de finalização
+            
+            // Atualizar progresso manualmente
+            setProgresso(prev => ({
+              ...prev,
+              questaoAtual: prev.questaoAtual + 1,
+              pontuacaoAtual: prev.pontuacaoAtual + (response.respostaCorreta ? response.pontosGanhos : 0),
+              percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
+            }));
+            
+            // Reiniciar timer para próxima questão (30 minutos)
+            setTimeLeft(30 * 60);
+            console.log('✅ Próxima questão carregada');
+          }, 2000);
+        }
+        
+      } catch (err: any) {
+        console.error('❌ Erro ao responder questão:', err);
+        console.error('❌ Status do erro:', err.response?.status);
+        console.error('❌ Dados do erro:', err.response?.data);
+        
+        // Se a API retornou 200 OK mas o frontend está tratando como erro
+        if (err.response?.status === 200) {
+          console.log('⚠️ API retornou 200 OK, mas frontend está tratando como erro');
+          // Não definir erro, continuar o fluxo
+        } else if (err.response?.status === 400 && err.response?.data?.includes('Tentativa não encontrada ou já concluída')) {
+          // Tentativa já foi concluída - finalizar o quiz
+          console.log('🏁 Tentativa já concluída, finalizando quiz');
+          setQuizCompleted(true);
+          setTimeLeft(0);
+        } else {
+          setError(err.response?.data?.message || 'Erro ao responder questão');
+        }
+      } finally {
+        setSubmitting(false);
       }
-      
-      setAnswers(newAnswers);
     }
   };
 
+
   const handleNext = () => {
     if (useDynamicMode) {
-      // No modo dinâmico, limpar feedback e ir para próxima questão
-      setMostrandoFeedback(false);
-      setFeedback(null);
-      
-      // Atualizar progresso
-      setProgresso(prev => ({
-        ...prev,
-        questaoAtual: prev.questaoAtual + 1,
-        percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
-      }));
-      
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
+      // Verificar se está pronto para finalizar
+      if (readyToFinalize) {
+        console.log('🏁 Usuário clicou em Finalizar Teste');
+        setQuizCompleted(true);
+        setTimeLeft(0);
       } else {
-        handleSubmitQuiz();
+        // Não está pronto para finalizar, apenas limpar feedback
+        setMostrandoFeedback(false);
+        setFeedback(null);
       }
     } else {
       // Modo tradicional
@@ -275,14 +335,14 @@ export function QuizAttempt() {
 
   // Redirecionar automaticamente para o dashboard (aba quiz) quando quiz for concluído
   useEffect(() => {
-    if (quizCompleted) {
+    if (quizCompleted && tentativaId) {
       const timer = setTimeout(() => {
         navigate('/dashboard?tab=quiz');
       }, 2000);
 
       return () => clearTimeout(timer);
     }
-  }, [quizCompleted, navigate]);
+  }, [quizCompleted, tentativaId, navigate]);
 
   // Aviso de encerramento se fechar a página durante o quiz
   useEffect(() => {
@@ -434,17 +494,19 @@ rafted        {/* Points and Progress */}
           options={currentQuestionData.opcoes.map(opt => ({ 
             id: opt.id, 
             text: opt.textoOpcao, 
-            correta: opt.correta 
+            correta: correctOptionId ? opt.id === correctOptionId : opt.correta 
           }))}
           selectedOptionId={getCurrentAnswer()}
           onAnswer={(optionId) => handleAnswer(currentQuestionData.id, optionId)}
+          onConfirmAnswer={(optionId) => handleConfirmAnswer(currentQuestionData.id, optionId)}
           onNext={handleNext}
           onPrevious={handlePrevious}
           isFirst={currentQuestion === 0}
-          isLast={currentQuestion === questions.length - 1}
+          isLast={useDynamicMode ? (readyToFinalize && mostrandoFeedback) : currentQuestion === questions.length - 1}
           submitting={submitting}
           showFeedback={!useDynamicMode} // Não mostrar feedback interno no modo dinâmico
         />
+        
 
         {/* Feedback do Modo Dinâmico */}
         {useDynamicMode && feedback && mostrandoFeedback && (

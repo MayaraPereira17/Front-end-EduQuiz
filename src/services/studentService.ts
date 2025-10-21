@@ -233,6 +233,14 @@ export const studentService = {
       console.log('🎯 Resultado final:', result);
       console.log('📊 Quantidade de quizzes encontrados:', result.length);
       
+      // Verificar se os quizzes têm os campos necessários
+      if (result.length > 0) {
+        console.log('🔍 Verificando campos do primeiro quiz:');
+        console.log('- quizConcluido:', result[0].quizConcluido);
+        console.log('- tentativasRestantes:', result[0].tentativasRestantes);
+        console.log('- Quiz completo:', result[0]);
+      }
+      
       return result;
     } catch (error: any) {
       console.error('❌ Erro ao buscar quizzes do endpoint /api/aluno/quizzes:', error);
@@ -268,7 +276,9 @@ export const studentService = {
           tempoLimite: quiz.tempoLimite,
           totalQuestoes: quiz.totalQuestoes || quiz.questoes?.length || 0,
           pontuacaoTotal: quiz.pontuacaoTotal || 100,
-          disponivel: true
+          disponivel: true,
+          quizConcluido: quiz.quizConcluido || false,
+          tentativasRestantes: quiz.tentativasRestantes || 1
         }));
         
         console.log('✅ Quizzes públicos transformados:', studentQuizzes);
@@ -467,12 +477,25 @@ export const studentService = {
   // Responder questão individual no modo dinâmico
   async answerQuestion(tentativaId: number, questaoId: number, opcaoSelecionadaId: number): Promise<QuestionAnswerResponse> {
     try {
+      console.log('🔄 Enviando resposta para API:', { tentativaId, questaoId, opcaoSelecionadaId });
+      
       const response = await api.post(`/api/aluno/tentativas/${tentativaId}/responder`, {
         questaoId,
         opcaoSelecionadaId
       });
-      return response.data.data || response.data;
+      
+      console.log('✅ Resposta da API recebida:', response.data);
+      console.log('📊 Status da resposta:', response.status);
+      
+      // Retornar diretamente response.data se não tiver .data aninhado
+      const result = response.data.data || response.data;
+      console.log('🎯 Resultado final:', result);
+      
+      return result;
     } catch (error: any) {
+      console.error('❌ Erro na API answerQuestion:', error);
+      console.error('❌ Status do erro:', error.response?.status);
+      console.error('❌ Dados do erro:', error.response?.data);
       throw error;
     }
   },

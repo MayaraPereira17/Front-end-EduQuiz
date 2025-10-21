@@ -7,6 +7,7 @@ interface QuestionProps {
   options: { id: number; text: string; correta?: boolean }[]; // alternativas com ID e se é correta
   selectedOptionId?: number; // ID da opção selecionada
   onAnswer?: (optionId: number) => void; // callback para seleção
+  onConfirmAnswer?: (optionId: number) => void; // callback para confirmar resposta
   onNext: () => void;
   onPrevious?: () => void;
   isFirst?: boolean;
@@ -19,6 +20,7 @@ export const Question: React.FC<QuestionProps> = ({
   options,
   selectedOptionId,
   onAnswer,
+  onConfirmAnswer,
   onNext,
   onPrevious,
   isFirst = false,
@@ -30,10 +32,43 @@ export const Question: React.FC<QuestionProps> = ({
   const [confirmed, setConfirmed] = useState(false);
   const [userAnswer, setUserAnswer] = useState<number | null>(null);
 
+  // Reset states only when question ID actually changes (not on every re-render)
+  const [currentQuestionId, setCurrentQuestionId] = useState<string>('');
+  
+  React.useEffect(() => {
+    // Criar um ID único baseado nas opções para detectar mudança real de questão
+    const questionId = options.map(opt => `${opt.id}-${opt.text}`).join('|');
+    
+    if (questionId !== currentQuestionId && questionId !== '') {
+      console.log('🔄 Nova questão detectada, resetando estados');
+      setCurrentQuestionId(questionId);
+      setSelectedIndex(null);
+      setConfirmed(false);
+      setUserAnswer(null);
+    }
+  }, [options, currentQuestionId]);
+
+  // Debug log para verificar props (apenas quando há mudanças importantes)
+  React.useEffect(() => {
+    if (confirmed || isLast) {
+      console.log('🔍 Question Component - Estado importante:', {
+        isLast,
+        confirmed,
+        selectedOptionId,
+        optionsLength: options.length
+      });
+    }
+  }, [isLast, confirmed, selectedOptionId, options]);
+
   const handleConfirm = () => {
     if (!confirmed && (selectedOptionId || selectedIndex !== null)) {
       setConfirmed(true);
       setUserAnswer(selectedOptionId || selectedIndex);
+      
+      // Se tem callback de confirmar resposta, chama ele
+      if (onConfirmAnswer && (selectedOptionId || selectedIndex !== null)) {
+        onConfirmAnswer((selectedOptionId || selectedIndex)!);
+      }
     } else {
       // Chama o próximo
       setSelectedIndex(null);
@@ -93,12 +128,18 @@ export const Question: React.FC<QuestionProps> = ({
             <button
               key={option.id}
               onClick={() => {
+                console.log('🖱️ Clique no botão da opção:', { optionId: option.id, index, confirmed });
                 if (!confirmed) {
+                  console.log('✅ Opção não confirmada, processando clique');
                   if (onAnswer) {
+                    console.log('📞 Chamando onAnswer com:', option.id);
                     onAnswer(option.id);
                   } else {
+                    console.log('📝 Definindo selectedIndex como:', index);
                     setSelectedIndex(index);
                   }
+                } else {
+                  console.log('❌ Opção já confirmada, clique ignorado');
                 }
               }}
               disabled={confirmed}
@@ -167,7 +208,7 @@ export const Question: React.FC<QuestionProps> = ({
               ? "Confirmar Resposta"
               : "Selecione uma opção"
           ) : isLast ? (
-            "Finalizar Quiz"
+            "Finalizar Teste"
           ) : (
             "Próxima Pergunta"
           )}
