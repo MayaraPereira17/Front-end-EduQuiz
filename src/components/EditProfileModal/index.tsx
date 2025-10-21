@@ -89,11 +89,6 @@ export const EditProfileModal: React.FC<EditProfileModalProps> = ({
     }
   };
 
-  const handleAvatarUpdate = (_avatarUrl: string) => {
-    // O avatar já é atualizado automaticamente pelo componente AvatarUpload
-    setSuccess(true);
-    setTimeout(() => setSuccess(false), 2000);
-  };
 
   if (!isOpen) return null;
 
