@@ -143,9 +143,36 @@ export const quizService = {
     return response.data.data || response.data;
   },
 
-  // Deletar quiz
-  async deleteQuiz(quizId: string): Promise<void> {
-    await api.delete(`/api/professor/quizzes/${quizId}`);
+  // Deletar quiz (ou desativar se houver tentativas)
+  async deleteQuiz(quizId: string): Promise<{ 
+    success: boolean; 
+    message: string; 
+    action: 'deleted' | 'deactivated';
+    hasAttempts?: boolean;
+  }> {
+    console.log('🗑️ quizService.deleteQuiz chamado com ID:', quizId);
+    console.log('🔄 Fazendo requisição DELETE para:', `/api/professor/quizzes/${quizId}`);
+    
+    try {
+      const response = await api.delete(`/api/professor/quizzes/${quizId}`);
+      console.log('✅ Resposta da API para deleteQuiz:', response);
+      console.log('📊 Status:', response.status);
+      console.log('📊 Data:', response.data);
+      
+      // Retornar informações sobre a ação realizada
+      const responseData = response.data.data || response.data;
+      return {
+        success: true,
+        message: responseData.message || 'Operação realizada com sucesso',
+        action: responseData.action || 'deleted',
+        hasAttempts: responseData.hasAttempts || false
+      };
+    } catch (error: any) {
+      console.error('❌ Erro na API deleteQuiz:', error);
+      console.error('❌ Status do erro:', error.response?.status);
+      console.error('❌ Dados do erro:', error.response?.data);
+      throw error;
+    }
   },
 
   // Publicar quiz

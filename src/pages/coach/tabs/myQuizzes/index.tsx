@@ -3,7 +3,7 @@ import { SearchInput } from "../../../../components/searchInput";
 import bookImg from "../../../../assets/icons/blue-book.svg";
 import checkedImg from "../../../../assets/icons/checked.svg";
 import dateImg from "../../../../assets/icons/date.svg";
-import deleteImg from "../../../../assets/icons/delete.svg";
+// import deleteImg from "../../../../assets/icons/delete.svg";
 import editImg from "../../../../assets/icons/edit.svg";
 import checkedSmallImg from "../../../../assets/icons/checked-small.svg";
 import { Badge } from "../../../../components/badge";
@@ -29,6 +29,13 @@ export function MyQuizzesCoach() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  
+  // Estados para o modal de confirmação (comentados temporariamente)
+  // const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // const [quizToDelete, setQuizToDelete] = useState<{ id: string; titulo: string } | null>(null);
+  
+  // Estado para o filtro de status
+  const [statusFilter, setStatusFilter] = useState<'todos' | 'publicados' | 'despublicados'>('todos');
 
   // Carregar dados dos quizzes
   useEffect(() => {
@@ -117,17 +124,67 @@ export function MyQuizzesCoach() {
     navigate(`/coach/quizz/edit-quizz?id=${quizId}`);
   };
 
-  const handleDeleteQuiz = async (quizId: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este quiz?')) {
-      try {
-        await quizService.deleteQuiz(quizId);
-        await loadQuizzes(searchTerm); // Recarregar lista
-        await loadStats(); // Recarregar estatísticas
-      } catch (err: any) {
-        setError(err.message || 'Erro ao excluir quiz');
+  // Funções de exclusão comentadas temporariamente
+  /*
+  const handleDeleteQuiz = async (quizId: string, quizTitulo: string) => {
+    console.log('🗑️ Tentando excluir quiz:', quizId);
+    
+    // Abrir modal de confirmação
+    setQuizToDelete({ id: quizId, titulo: quizTitulo });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteQuiz = async () => {
+    if (!quizToDelete) return;
+    
+    console.log('✅ Usuário confirmou exclusão');
+    
+    try {
+      setLoading(true);
+      setError(null);
+      setSuccess(null);
+      
+      console.log('🔄 Chamando quizService.deleteQuiz...');
+      const result = await quizService.deleteQuiz(quizToDelete.id);
+      console.log('✅ Operação realizada:', result);
+      
+      console.log('🔄 Recarregando lista de quizzes...');
+      await loadQuizzes(searchTerm); // Recarregar lista
+      
+      console.log('🔄 Recarregando estatísticas...');
+      await loadStats(); // Recarregar estatísticas
+      
+      // Mostrar mensagem apropriada baseada na ação
+      if (result.action === 'deleted') {
+        setSuccess('✅ Quiz excluído permanentemente!');
+      } else if (result.action === 'deactivated') {
+        setSuccess('⚠️ Quiz desativado (preservando dados dos alunos)');
+      } else {
+        setSuccess(result.message || 'Operação realizada com sucesso!');
       }
+      
+      console.log('✅ Operação de exclusão concluída');
+      
+    } catch (err: any) {
+      console.error('❌ Erro ao excluir quiz:', err);
+      console.error('❌ Status do erro:', err.response?.status);
+      console.error('❌ Dados do erro:', err.response?.data);
+      
+      const errorMessage = err.response?.data?.message || err.message || 'Erro ao excluir quiz';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+      setShowDeleteModal(false);
+      setQuizToDelete(null);
     }
   };
+
+  const cancelDeleteQuiz = () => {
+    console.log('❌ Usuário cancelou exclusão');
+    setShowDeleteModal(false);
+    setQuizToDelete(null);
+  };
+  */
 
   const handleTogglePublish = async (quizId: string, currentStatus: boolean) => {
     try {
@@ -178,6 +235,8 @@ export function MyQuizzesCoach() {
     }
   };
 
+  // Função de salvar como rascunho comentada (não utilizada)
+  /*
   const handleSaveAsDraft = async (quizId: string) => {
     try {
       setLoading(true);
@@ -204,6 +263,7 @@ export function MyQuizzesCoach() {
       setLoading(false);
     }
   };
+  */
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -215,6 +275,27 @@ export function MyQuizzesCoach() {
       minute: '2-digit'
     });
   };
+
+  // Filtrar quizzes baseado no status selecionado
+  const getFilteredQuizzes = () => {
+    if (statusFilter === 'todos') {
+      return quizzes;
+    }
+    
+    return quizzes.filter(quiz => {
+      const isPublished = quiz.publico === true || quiz.publicado === true;
+      
+      if (statusFilter === 'publicados') {
+        return isPublished;
+      } else if (statusFilter === 'despublicados') {
+        return !isPublished;
+      }
+      
+      return true;
+    });
+  };
+
+  const filteredQuizzes = getFilteredQuizzes();
 
   const getDifficultyLabel = (difficulty: string) => {
     switch (difficulty) {
@@ -235,8 +316,6 @@ export function MyQuizzesCoach() {
   };
 
 
-  // A busca agora é feita na API, não precisamos filtrar localmente
-  const filteredQuizzes = quizzes;
 
   if (loading) {
     return (
@@ -314,27 +393,27 @@ export function MyQuizzesCoach() {
       {!searchTerm && (
         <>
           {/* Estatísticas dos quizzes */}
-          <div className="grid grid-cols-2 gap-3.5 mb-6">
-            <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
-              <img src={bookImg} alt="" />
+      <div className="grid grid-cols-2 gap-3.5 mb-6">
+        <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
+          <img src={bookImg} alt="" />
 
-              <div className="flex flex-col text-center">
+          <div className="flex flex-col text-center">
                 <span className="font-bold text-2xl">{stats.quizzesCriados}</span>
 
-                <span className="text-[#4A5565] text-base">Total de Quizzes</span>
-              </div>
-            </div>
+            <span className="text-[#4A5565] text-base">Total de Quizzes</span>
+          </div>
+        </div>
 
-            <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
-              <img src={checkedImg} alt="" />
+        <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
+          <img src={checkedImg} alt="" />
 
-              <div className="flex flex-col text-center">
+          <div className="flex flex-col text-center">
                 <span className="font-bold text-2xl">{stats.totalTentativas}</span>
 
                 <span className="text-[#4A5565] text-base">Total de Tentativas</span>
-              </div>
-            </div>
           </div>
+        </div>
+      </div>
         </>
       )}
 
@@ -387,7 +466,64 @@ export function MyQuizzesCoach() {
             )}
           </div>
         ) : (
-        filteredQuizzes.map((quiz) => {
+        <>
+          {/* Filtro de Status com Segmented Control */}
+          <div className="flex justify-center mb-6">
+            <div className="inline-flex bg-gray-100 rounded-lg p-1 shadow-sm">
+              <button
+                onClick={() => setStatusFilter('todos')}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  statusFilter === 'todos'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Todos
+              </button>
+              <button
+                onClick={() => setStatusFilter('publicados')}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  statusFilter === 'publicados'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Publicados
+              </button>
+              <button
+                onClick={() => setStatusFilter('despublicados')}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                  statusFilter === 'despublicados'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Despublicados
+              </button>
+            </div>
+          </div>
+
+          {/* Lista de Quizzes */}
+          {filteredQuizzes.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                {statusFilter === 'todos' ? 'Nenhum quiz encontrado' : 
+                 statusFilter === 'publicados' ? 'Nenhum quiz publicado' : 
+                 'Nenhum quiz despublicado'}
+              </h3>
+              <p className="text-gray-500">
+                {statusFilter === 'todos' ? 'Comece criando seu primeiro quiz!' : 
+                 statusFilter === 'publicados' ? 'Publique alguns quizzes para vê-los aqui.' : 
+                 'Todos os seus quizzes estão publicados.'}
+              </p>
+            </div>
+          ) : (
+            filteredQuizzes.map((quiz) => {
           // Verificar se o quiz está publicado (pode ser 'publico' ou 'publicado')
           const isPublished = quiz.publico === true || quiz.publicado === true;
           
@@ -403,7 +539,7 @@ export function MyQuizzesCoach() {
             <div className="flex justify-between items-center mb-2">
               <span className="text-[#0A0A0A] text-lg">{quiz.titulo}</span>
 
-              <Badge
+          <Badge
                 variant={isPublished ? "success" : "default"}
                 className={`gap-1 items-center justify-center ${
                   quiz.ativo === false ? 'bg-red-100 text-red-700 border-red-200' : ''
@@ -411,69 +547,62 @@ export function MyQuizzesCoach() {
                 icon={isPublished ? <img src={checkedSmallImg} /> : undefined}
               >
                 {isPublished ? "Publicado" : quiz.ativo === false ? "Desativado" : "Rascunho"}
-              </Badge>
-            </div>
+          </Badge>
+        </div>
 
             {quiz.descricao && (
-              <div className="mb-10">
+        <div className="mb-10">
                 <span className="text-[#4A5565] text-sm">
                   {quiz.descricao}
-                </span>
-              </div>
+          </span>
+        </div>
             )}
 
-            <div className="space-x-2 mb-4">
-              <Badge
+        <div className="space-x-2 mb-4">
+          <Badge
                 variant={getDifficultyVariant(quiz.dificuldade)}
-                className="gap-1 items-center justify-center"
-              >
+            className="gap-1 items-center justify-center"
+          >
                 {getDifficultyLabel(quiz.dificuldade)}
-              </Badge>
-            </div>
+          </Badge>
+        </div>
 
-            <div className="grid grid-cols-3 text-center py-2 mb-2.5">
-              <div className="flex flex-col">
+        <div className="grid grid-cols-3 text-center py-2 mb-2.5">
+          <div className="flex flex-col">
                 <span className="font-bold text-base">{quiz.totalQuestoes || quiz.questoes.length}</span>
-                <span className="text-[#4A5565]">Questões</span>
-              </div>
+            <span className="text-[#4A5565]">Questões</span>
+          </div>
 
-              <div className="flex flex-col">
+          <div className="flex flex-col">
                 <span className="font-bold text-base">{quiz.tempoLimite}min</span>
-                <span className="text-[#4A5565]">Tempo</span>
-              </div>
+            <span className="text-[#4A5565]">Tempo</span>
+          </div>
 
-              <div className="flex flex-col">
+          <div className="flex flex-col">
                 <span className="font-bold text-base">{quiz.totalTentativas || 0}</span>
-                <span className="text-[#4A5565]">Tentativas</span>
-              </div>
-            </div>
+            <span className="text-[#4A5565]">Tentativas</span>
+          </div>
+        </div>
 
             {quiz.dataCriacao && (
-              <div className="flex items-center gap-2 mb-4">
-                <img src={dateImg} alt="" />
-                <span className="text-[#6A7282] text-xs">
+        <div className="flex items-center gap-2 mb-4">
+          <img src={dateImg} alt="" />
+          <span className="text-[#6A7282] text-xs">
                   Criado em {formatDate(quiz.dataCriacao)}
-                </span>
-              </div>
+          </span>
+        </div>
             )}
 
             <button 
               className="flex border justify-center w-full border-black/10 gap-2.5 text-sm rounded-lg py-1 mb-2.5"
               onClick={() => handleEditQuiz(quiz.id!.toString())}
             >
-              <img src={editImg} alt="" />
-              Editar
-            </button>
+          <img src={editImg} alt="" />
+          Editar
+        </button>
 
             <div className="flex justify-between items-center">
               <div className="flex gap-2">
-                {(() => {
-                  console.log('=== AVALIANDO BOTÕES ===');
-                  console.log('isPublished:', isPublished);
-                  console.log('!isPublished:', !isPublished);
-                  return null;
-                })()}
-                
                 {!isPublished && (
                   <button 
                     className="text-sm px-3 py-1 rounded border border-green-300 text-green-700 hover:bg-green-50 transition-colors"
@@ -493,30 +622,99 @@ export function MyQuizzesCoach() {
                     {loading ? 'Processando...' : 'Despublicar'}
                   </button>
                 )}
-                
-                {isPublished && (
-                  <button 
-                    className="text-sm px-3 py-1 rounded border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors"
-                    onClick={() => handleSaveAsDraft(quiz.id!.toString())}
-                    disabled={loading}
-                  >
-                    {loading ? 'Processando...' : 'Salvar como Rascunho'}
-                  </button>
-                )}
               </div>
               
-              <button 
+              {/* Botão de excluir comentado temporariamente */}
+              {/* <button 
                 className="hover:bg-red-50 p-1 rounded transition-colors"
-                onClick={() => handleDeleteQuiz(quiz.id!.toString())}
+                onClick={() => handleDeleteQuiz(quiz.id!.toString(), quiz.titulo)}
                 disabled={loading}
                 title="Excluir quiz"
               >
                 <img src={deleteImg} alt="Excluir" />
-              </button>
-            </div>
-          </div>
+              </button> */}
+        </div>
+      </div>
           );
         })
+          )}
+        </>
+      )}
+
+      {/* Modal de Confirmação de Exclusão (comentado temporariamente) */}
+      {false && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full max-w-md p-6 shadow-xl">
+            {/* Ícone de Aviso */}
+            <div className="flex justify-center mb-4">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+        </div>
+        </div>
+
+            {/* Título */}
+            <h3 className="text-xl font-bold text-gray-900 text-center mb-2">
+              Confirmar Exclusão
+            </h3>
+
+            {/* Mensagem */}
+            <div className="text-center mb-6">
+              <p className="text-gray-600 mb-3">
+                Tem certeza que deseja excluir o quiz:
+              </p>
+              <p className="font-semibold text-gray-900 text-lg mb-4">
+                {/* "{quizToDelete?.titulo}" */}
+              </p>
+              
+              {/* Aviso sobre proteção de dados */}
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                  <div className="text-sm text-blue-800">
+                    <p className="font-medium mb-1">Proteção de Dados</p>
+                    <p>Se alunos já fizeram tentativas, o quiz será apenas desativado para preservar os dados e histórico de desempenho.</p>
+          </div>
+          </div>
+          </div>
+        </div>
+
+            {/* Botões */}
+            <div className="flex gap-3">
+              <button
+                // onClick={cancelDeleteQuiz}
+                disabled={loading}
+                className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium disabled:opacity-50"
+              >
+                Cancelar
+        </button>
+              <button
+                // onClick={confirmDeleteQuiz}
+                disabled={loading}
+                className="flex-1 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Processando...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Excluir Quiz
+                  </>
+                )}
+          </button>
+        </div>
+      </div>
+        </div>
       )}
     </div>
   );
