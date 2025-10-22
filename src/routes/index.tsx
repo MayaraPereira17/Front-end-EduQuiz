@@ -13,7 +13,7 @@ import { Register } from "../pages/register";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { AdminLayout } from "../pages/admin/_layouts/adminLayout";
 import { HomeAdmin } from "../pages/admin/tabs/home";
-import { ProfileAdmin } from "../pages/admin/tabs/profile";
+import { ProfileAdminPage } from "../pages/admin/tabs/profile";
 import { ReportsAdmin } from "../pages/admin/tabs/reports";
 import { RankingAdmin } from "../pages/admin/tabs/ranking";
 import { QuizAttempt } from "../pages/dashboard/QuizAttempt";
@@ -82,7 +82,7 @@ const router = createBrowserRouter([
       { path: "", element: <HomeAdmin /> },
       { path: "ranking", element: <RankingAdmin /> },
       { path: "reports", element: <ReportsAdmin /> },
-      { path: "profile", element: <ProfileAdmin /> },
+      { path: "profile", element: <ProfileAdminPage /> },
     ],
   },
 ]);

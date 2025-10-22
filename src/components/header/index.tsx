@@ -7,9 +7,10 @@ import { useNavigate } from "react-router-dom";
 interface HeaderProps {
   children: React.ReactNode;
   isTeacher?: boolean;
+  isAdmin?: boolean;
 }
 
-export function Header({ children, isTeacher = false }: HeaderProps) {
+export function Header({ children, isTeacher = false, isAdmin = false }: HeaderProps) {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
@@ -29,7 +30,7 @@ export function Header({ children, isTeacher = false }: HeaderProps) {
       </Tabs.List>
 
       <div className="flex gap-10">
-        <AvatarDemo isTeacher={isTeacher} />
+        <AvatarDemo isTeacher={isTeacher} isAdmin={isAdmin} />
         <button className="text-[#404040] text-sm" onClick={handleLogout}>
           Sair
         </button>

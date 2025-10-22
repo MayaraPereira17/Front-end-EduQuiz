@@ -32,7 +32,7 @@ export function AdminLayout() {
       onValueChange={handleTabChange}
       className="flex flex-col h-screen bg-[#EBF1F4]"
     >
-      <Header isTeacher>
+      <Header isTeacher={false} isAdmin={true}>
         <TabsTrigger value="home">Início</TabsTrigger>
         <TabsTrigger value="ranking">Ranking</TabsTrigger>
         <TabsTrigger value="reports">Relatórios</TabsTrigger>

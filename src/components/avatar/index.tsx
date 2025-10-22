@@ -3,9 +3,10 @@ import { useAuth } from "../../hooks/userAuth";
 
 interface Props {
   isTeacher: boolean;
+  isAdmin?: boolean;
 }
 
-export const AvatarDemo = ({ isTeacher }: Props) => {
+export const AvatarDemo = ({ isTeacher, isAdmin = false }: Props) => {
   const { user } = useAuth();
   
   // Gerar iniciais do nome do usuário
@@ -31,9 +32,14 @@ export const AvatarDemo = ({ isTeacher }: Props) => {
         </Avatar.Root>
       </div>
       <div className="flex flex-col">
-        <span className="text-xs font-bold">
-          {isTeacher && "Prof"} {user?.firstName} {user?.lastName}
-        </span>
+        <div className="flex items-center gap-1">
+          {isAdmin && (
+            <span className="text-sm">⚽</span>
+          )}
+          <span className="text-xs font-bold">
+            {isAdmin && "Técnico"} {isTeacher && !isAdmin && "Prof"} {user?.firstName} {user?.lastName}
+          </span>
+        </div>
         <span className="text-xs">{user?.email}</span>
       </div>
     </div>
