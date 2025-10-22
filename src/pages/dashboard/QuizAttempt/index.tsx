@@ -106,7 +106,7 @@ export function QuizAttempt() {
         setError("Este quiz já foi concluído. Você só pode fazer cada quiz uma vez.");
         // Redirecionar para a lista de quizzes após 3 segundos
         setTimeout(() => {
-          navigate('/dashboard/quizzes');
+          navigate('/dashboard?tab=quiz');
         }, 3000);
       } else {
         setError("Erro ao carregar quiz. Tente novamente.");
@@ -381,7 +381,7 @@ export function QuizAttempt() {
           <h3 className="text-xl font-semibold text-gray-800 mb-2">Erro ao carregar quiz</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
-            onClick={() => navigate('/dashboard/quiz')}
+            onClick={() => navigate('/dashboard?tab=quiz')}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
             Voltar para lista de quizzes

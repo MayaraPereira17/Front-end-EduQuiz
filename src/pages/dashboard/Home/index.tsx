@@ -36,7 +36,7 @@ export function Home() {
   };
 
   const handleStartQuiz = () => {
-    navigate('/dashboard/quiz');
+    navigate('/dashboard?tab=quiz');
   };
 
   useEffect(() => {

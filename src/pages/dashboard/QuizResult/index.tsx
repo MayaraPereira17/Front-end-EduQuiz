@@ -91,7 +91,7 @@ export function QuizResult() {
           <h3 className="text-xl font-semibold text-gray-800 mb-2">Erro ao carregar resultado</h3>
           <p className="text-gray-600 mb-4">{error}</p>
           <button 
-            onClick={() => navigate('/dashboard/quiz')}
+            onClick={() => navigate('/dashboard?tab=quiz')}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
           >
             Voltar para lista de quizzes
@@ -151,7 +151,7 @@ export function QuizResult() {
           {/* Action Buttons */}
           <div className="flex gap-4 justify-center">
             <button
-              onClick={() => navigate('/dashboard/quiz')}
+              onClick={() => navigate('/dashboard?tab=quiz')}
               className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
               <Home className="w-4 h-4" />
