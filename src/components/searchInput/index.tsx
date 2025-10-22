@@ -1,18 +1,53 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import searchIcon from "../../assets/icons/search.svg";
 
 interface SearchInputProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearch?: (termo: string) => void;
   placeholder?: string;
 }
 
-export function SearchInput({ value = "", onChange, placeholder = "Buscar..." }: SearchInputProps) {
+export function SearchInput({ value = "", onChange, onSearch, placeholder = "Buscar..." }: SearchInputProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [searchTerm, setSearchTerm] = useState(value);
+  const [searchTimeout, setSearchTimeout] = useState<number | null>(null);
 
   const handleFocus = () => {
     inputRef.current?.focus();
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setSearchTerm(newValue);
+    
+    // Chamar onChange se fornecido
+    if (onChange) {
+      onChange(e);
+    }
+
+    // Debounce para onSearch
+    if (onSearch) {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+      
+      const timeout = window.setTimeout(() => {
+        onSearch(newValue);
+      }, 500);
+      
+      setSearchTimeout(timeout);
+    }
+  };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeout) {
+        clearTimeout(searchTimeout);
+      }
+    };
+  }, [searchTimeout]);
   
   return (
     <div
@@ -23,8 +58,8 @@ export function SearchInput({ value = "", onChange, placeholder = "Buscar..." }:
       <input
         ref={inputRef}
         type="text"
-        value={value}
-        onChange={onChange}
+        value={searchTerm}
+        onChange={handleInputChange}
         placeholder={placeholder}
         className="flex-1 bg-transparent outline-none text-[#404040] placeholder:text-[#A3A3A3]"
       />

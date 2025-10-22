@@ -1,14 +1,21 @@
 import { Trophy, Users } from "lucide-react";
+import { type DashboardTecnicoDTO } from "../../../../../services/tecnicoService";
 
-export function Stats() {
+interface StatsProps {
+  dashboard: DashboardTecnicoDTO | null;
+}
+
+export function Stats({ dashboard }: StatsProps) {
   return (
     <div className="grid grid-cols-2 w-1/2 gap-6">
       <div className="w-full border border-black/10 flex items-center p-6 rounded-2xl bg-white justify-between gap-2">
         <div className="flex flex-col gap-2">
-          <span className="text-sm text-[#4A5565]">Alunos Ativos</span>
-          <span className="text-2xl text-[#155DFC] font-bold">4</span>
+          <span className="text-sm text-[#4A5565]">Total de Alunos</span>
+          <span className="text-2xl text-[#155DFC] font-bold">
+            {dashboard?.totalAlunos || 0}
+          </span>
           <span className="text-[#00A63E] text-xs">
-            Participando dos estudos
+            Alunos da Escolinha de Futebol
           </span>
         </div>
 
@@ -17,11 +24,12 @@ export function Stats() {
 
       <div className="w-full border border-black/10 flex items-center p-6 rounded-2xl bg-white justify-between gap-2">
         <div className="flex flex-col gap-2">
-          <span className="text-sm text-[#4A5565]">Alunos Ativos</span>
-
-          <span className="text-2xl text-[#00A63E] font-bold">86%</span>
+          <span className="text-sm text-[#4A5565]">Performance Geral</span>
+          <span className="text-2xl text-[#00A63E] font-bold">
+            {dashboard?.performanceGeral || 0}%
+          </span>
           <span className="text-[#00A63E] text-xs">
-            Performance nos quizzes
+            Média de performance nos quizzes
           </span>
         </div>
 

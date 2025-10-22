@@ -1,30 +1,13 @@
 import clsx from "clsx";
 import { Star } from "lucide-react";
+import { type DashboardTecnicoDTO } from "../../../../../services/tecnicoService";
 
-export function BestStudents() {
-  const students = [
-    {
-      name: "João Silva",
-      studyTime: "12 dias consecutivos de estudo",
-      percentage: "92%",
-      totalQuizzes: "15",
-      podium: 1,
-    },
-    {
-      name: "Maria Santos",
-      studyTime: "8 dias consecutivos de estudo",
-      percentage: "87%",
-      totalQuizzes: "12",
-      podium: 2,
-    },
-    {
-      name: "Ana Oliveira",
-      studyTime: "15 dias consecutivos de estudo",
-      percentage: "85%",
-      totalQuizzes: "14",
-      podium: 3,
-    },
-  ];
+interface BestStudentsProps {
+  dashboard: DashboardTecnicoDTO | null;
+}
+
+export function BestStudents({ dashboard }: BestStudentsProps) {
+  const students = dashboard?.melhoresAlunos || [];
 
   const podiumIcon = (podium: number) => {
     const baseClass =
@@ -53,33 +36,39 @@ export function BestStudents() {
 
       {/* 🥇🥈🥉 */}
       <div className="space-y-4 h-full">
-        {students.map((item) => {
-          return (
-            <div
-              className="bg-[#F9FAFB] flex justify-between px-4 py-2.5 rounded-lg"
-              key={item.name}
-            >
-              <div className="flex items-center gap-4">
-                <div>{podiumIcon(item.podium)}</div>
-                <div>
-                  <span className="block text-base">{item.name}</span>
-                  <span className="block text-[#4A5565] text-sm">
-                    {item.studyTime}
+        {students.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Nenhum aluno encontrado
+          </div>
+        ) : (
+          students.map((aluno) => {
+            return (
+              <div
+                className="bg-[#F9FAFB] flex justify-between px-4 py-2.5 rounded-lg"
+                key={aluno.posicao}
+              >
+                <div className="flex items-center gap-4">
+                  <div>{podiumIcon(aluno.posicao)}</div>
+                  <div>
+                    <span className="block text-base">{aluno.nome}</span>
+                    <span className="block text-[#4A5565] text-sm">
+                      {aluno.sequencia} dias consecutivos de estudo
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col text-end">
+                  <span className="text-base text-[#00A63E] font-bold">
+                    {aluno.performance}%
                   </span>
+                  <span className="text-sm text-[#4A5565]">
+                    {aluno.totalQuizzes}
+                  </span>
+                  <span className="text-sm text-[#4A5565]"> quizzes</span>
                 </div>
               </div>
-              <div className="flex flex-col text-end">
-                <span className="text-base text-[#00A63E] font-bold">
-                  {item.percentage}
-                </span>
-                <span className="text-sm text-[#4A5565]">
-                  {item.totalQuizzes}
-                </span>
-                <span className="text-sm text-[#4A5565]"> quizzes</span>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );
