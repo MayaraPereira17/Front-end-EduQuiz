@@ -43,6 +43,15 @@ export function QuizAttempt() {
     pontuacaoAtual: 0,
     tempoGasto: 0
   });
+  
+  // 🔍 DEBUG: Rastrear histórico de pontuação
+  const [pontuacaoHistory, setPontuacaoHistory] = useState<Array<{
+    questao: number;
+    respostaCorreta: boolean;
+    pontosGanhos: number;
+    pontuacaoAntes: number;
+    pontuacaoDepois: number;
+  }>>([]);
 
   const loadQuiz = async () => {
     if (!quizId) {
@@ -55,13 +64,55 @@ export function QuizAttempt() {
       setLoading(true);
       setError(null);
       
+      // 🔄 RESETAR ESTADO AO INICIAR NOVO QUIZ
+      console.log('🔄 ========== INICIANDO NOVO QUIZ ==========');
+      console.log('📊 Quiz ID:', quizId);
+      console.log('🔄 Resetando TODOS os estados de pontuação...');
+      console.log('📊 Estado ANTES do reset:', {
+        pontuacaoAtual: progresso.pontuacaoAtual,
+        questaoAtual: progresso.questaoAtual,
+        totalQuestoes: progresso.totalQuestoes
+      });
+      
+      // ✅ RESETAR COMPLETAMENTE TODOS OS ESTADOS
+      setProgresso({
+        questaoAtual: 0,
+        totalQuestoes: 0,
+        percentualCompleto: 0,
+        pontuacaoAtual: 0, // FORÇAR ZERO
+        tempoGasto: 0
+      });
+      setPontuacaoHistory([]); // Limpar histórico
+      setAnswers([]); // Limpar respostas
+      setFeedback(null); // Limpar feedback
+      setCorrectOptionId(null); // Limpar opção correta
+      setMostrandoFeedback(false); // Limpar feedback visual
+      setReadyToFinalize(false); // Resetar finalização
+      
+      console.log('✅ Estado resetado completamente!');
+      console.log('📊 Pontuação garantida como ZERO:', 0);
+      
       if (useDynamicMode) {
         // Modo dinâmico real: iniciar quiz
         const response = await studentService.startDynamicQuiz(parseInt(quizId));
         
+        console.log('✅ Quiz iniciado com sucesso!');
+        console.log('📊 Resposta completa da API:', JSON.stringify(response, null, 2));
+        console.log('📊 Tentativa ID:', response.tentativaId);
+        console.log('📊 Progresso inicial da API:', JSON.stringify(response.progresso, null, 2));
+        console.log('📊 Pontuação inicial da API:', response.progresso?.pontuacaoAtual || 0);
+        
         setTentativaId(response.tentativaId);
         setQuestions([response.questaoAtual]); // Mostrar apenas a questão atual
-        setProgresso(response.progresso);
+        
+        // ✅ USAR PONTUAÇÃO DO BACKEND (fonte de verdade)
+        // O backend já calcula tudo, não devemos recalcular no frontend
+        const progressoInicial = {
+          ...response.progresso,
+          pontuacaoAtual: response.progresso?.pontuacaoAtual || 0 // Usar valor do backend
+        };
+        console.log('📊 Progresso inicial configurado (usando valor do backend):', JSON.stringify(progressoInicial, null, 2));
+        setProgresso(progressoInicial);
         setQuizStarted(true);
         
         // Criar um quiz mock para evitar erro de "quiz não encontrado"
@@ -163,7 +214,32 @@ export function QuizAttempt() {
           optionId
         );
         
-        console.log('✅ Resposta da API recebida:', response);
+        // 📊 LOGS DETALHADOS DA RESPOSTA DA API
+        console.log('✅ ========== RESPOSTA DA API RECEBIDA ==========');
+        console.log('📊 Resposta completa:', JSON.stringify(response, null, 2));
+        console.log('📊 respostaCorreta:', response.respostaCorreta);
+        console.log('📊 pontosGanhos (do BACKEND):', response.pontosGanhos);
+        console.log('📊 respostaCorretaTexto:', response.respostaCorretaTexto);
+        console.log('📊 feedback:', response.feedback);
+        console.log('📊 Pontuação atual ANTES de atualizar:', progresso.pontuacaoAtual);
+        
+        // ✅ CONFIAR 100% NO BACKEND (conforme GUIA_FRONTEND_ENVIO_RESPOSTAS.md)
+        // Segundo o guia do backend:
+        // - O backend calcula a pontuação automaticamente
+        // - O backend retorna pontosGanhos corretos (1 se correto, 0 se incorreto)
+        // - O backend compara cada resposta com a opção correta no banco
+        // - NÃO devemos recalcular no frontend, apenas usar o valor do backend
+        console.log('📊 ========== USANDO VALORES DO BACKEND ==========');
+        console.log('📊 Pontos ganhos do BACKEND (fonte de verdade):', response.pontosGanhos);
+        console.log('📊 Resposta está correta?', response.respostaCorreta);
+        console.log('📊 O backend já calculou tudo! Confiando 100% no valor retornado.');
+        
+        // 🔍 LOG DE VALIDAÇÃO (apenas para debug, não força valores)
+        if (!response.respostaCorreta && response.pontosGanhos > 0) {
+          console.warn('⚠️ ATENÇÃO: API retornou pontosGanhos > 0 com respostaCorreta = false');
+          console.warn('⚠️ Isso pode indicar problema no backend. Valor recebido:', response.pontosGanhos);
+          console.warn('⚠️ Mas vamos confiar no backend e usar o valor como está.');
+        }
         
         // Encontrar o ID da opção correta baseado no texto da resposta
         const correctOption = currentQuestionData.opcoes.find(opt => 
@@ -176,16 +252,17 @@ export function QuizAttempt() {
           console.log('⚠️ Opção correta não encontrada para:', response.respostaCorretaTexto);
         }
         
-        // Mostrar feedback após confirmar
+        // Mostrar feedback após confirmar (usar valor do backend diretamente)
+        // O backend já calculou corretamente: 1 ponto se correto, 0 se incorreto
         setFeedback({
           correto: response.respostaCorreta,
-          pontosGanhos: response.pontosGanhos,
+          pontosGanhos: response.pontosGanhos, // Usar valor direto do backend
           respostaCorretaTexto: response.respostaCorretaTexto,
           mensagem: response.feedback
         });
         setMostrandoFeedback(true);
         
-        console.log('📊 Feedback configurado:', {
+        console.log('📊 Feedback configurado (valores do backend):', {
           correto: response.respostaCorreta,
           pontosGanhos: response.pontosGanhos,
           respostaCorretaTexto: response.respostaCorretaTexto
@@ -194,14 +271,113 @@ export function QuizAttempt() {
         // Verificar se quiz foi concluído
         if (response.quizConcluido) {
           // Quiz concluído - mostrar feedback e aguardar usuário finalizar
-          console.log('🏁 Quiz concluído - mostrando feedback e aguardando finalização');
-          setTentativaId(response.resultadoFinal?.tentativaId || tentativaId);
+          console.log('🏁 ========== QUIZ CONCLUÍDO ==========');
+          console.log('🔄 Versão do código: 2.0 - Usando backend como fonte de verdade');
+          
+          // ✅ USAR PONTUAÇÃO DO BACKEND (resultadoFinal)
+          // Segundo o GUIA: O backend já calculou tudo, incluindo a pontuação final
+          // NÃO devemos recalcular, apenas usar o valor que vem do backend
+          if (response.resultadoFinal) {
+            const resultadoApi = response.resultadoFinal as any;
+            const pontuacaoFinalBackend = resultadoApi.pontuacaoFinal || resultadoApi.pontuacaoTotal || 0;
+            
+            console.log('📊 ========== PONTUAÇÃO FINAL DO BACKEND ==========');
+            console.log('📊 Pontuação final calculada pelo BACKEND:', pontuacaoFinalBackend);
+            console.log('📊 Pontuação atual no frontend (antes):', progresso.pontuacaoAtual);
+            console.log('📊 Respostas corretas (backend):', resultadoApi.respostasCorretas);
+            console.log('📊 Respostas incorretas (backend):', resultadoApi.respostasErradas);
+            console.log('📊 Total de questões:', resultadoApi.totalQuestoes);
+            console.log('📊 Histórico de pontuação no frontend:', pontuacaoHistory);
+            console.log('📊 Usando pontuação do backend como fonte de verdade!');
+            
+            // 📋 RESUMO FINAL DO QUIZ
+            console.log('📋 ========== RESUMO FINAL DO QUIZ ==========');
+            console.log('📋 Tentativa ID:', resultadoApi.tentativaId);
+            console.log('📋 Total de questões:', resultadoApi.totalQuestoes);
+            console.log('📋 Respostas CORRETAS:', resultadoApi.respostasCorretas);
+            console.log('📋 Respostas INCORRETAS:', resultadoApi.respostasErradas);
+            console.log('📋 Pontuação FINAL (do BACKEND):', pontuacaoFinalBackend);
+            console.log('📋 Pontuação MÁXIMA possível:', resultadoApi.pontuacaoMaxima);
+            console.log('📋 Percentual de acerto:', resultadoApi.percentualAcerto + '%');
+            console.log('📋 Tempo gasto:', resultadoApi.tempoGasto, 'segundos');
+            console.log('📋 ============================================');
+            
+            // 🔍 COMPARAR: Frontend vs Backend
+            if (Math.abs(progresso.pontuacaoAtual - pontuacaoFinalBackend) > 0.1) {
+              console.error('⚠️⚠️⚠️ DISCREPÂNCIA ENCONTRADA! ⚠️⚠️⚠️');
+              console.error('⚠️ Pontuação do FRONTEND:', progresso.pontuacaoAtual);
+              console.error('⚠️ Pontuação do BACKEND:', pontuacaoFinalBackend);
+              console.error('⚠️ Diferença:', Math.abs(progresso.pontuacaoAtual - pontuacaoFinalBackend));
+              console.error('⚠️ O backend está correto! Usando valor do backend.');
+            }
+            
+            // Atualizar progresso com a pontuação do backend (fonte de verdade)
+            setProgresso(prev => ({
+              ...prev,
+              pontuacaoAtual: pontuacaoFinalBackend, // Usar valor do backend
+              percentualCompleto: 100
+            }));
+            
+            console.log('✅ Progresso atualizado com pontuação do backend:', pontuacaoFinalBackend);
+          } else {
+            // Fallback: somar última resposta se não tiver resultadoFinal
+            const pontosUltimaResposta = response.pontosGanhos; // Usar valor do backend diretamente
+            const pontuacaoAnterior = progresso.pontuacaoAtual;
+            const novaPontuacao = pontuacaoAnterior + pontosUltimaResposta;
+            
+            console.log('⚠️ ResultadoFinal não encontrado, usando cálculo de fallback');
+            console.log('📊 Pontuação anterior:', pontuacaoAnterior);
+            console.log('📊 Pontos da última resposta:', pontosUltimaResposta);
+            console.log('📊 Nova pontuação calculada:', novaPontuacao);
+            
+            setProgresso(prev => ({
+              ...prev,
+              pontuacaoAtual: novaPontuacao,
+              percentualCompleto: 100
+            }));
+          }
+          
+          const finalTentativaId = response.resultadoFinal?.tentativaId || tentativaId;
+          setTentativaId(finalTentativaId);
           setReadyToFinalize(true); // Marcar que está pronto para finalizar
+          
+          // Salvar resultado no localStorage para a página de resultado
+          if (response.resultadoFinal) {
+            console.log('💾 Salvando resultado no localStorage:', response.resultadoFinal);
+            
+            // 🔧 MAPEAR CAMPOS: API retorna pontuacaoFinal, mas interface espera pontuacaoTotal
+            const resultadoApi = response.resultadoFinal as any;
+            const pontuacaoOriginal = resultadoApi.pontuacaoFinal || resultadoApi.pontuacaoTotal || 0;
+            
+            console.log('📊 Pontuação no resultadoFinal (calculada pelo BACKEND):', pontuacaoOriginal);
+            
+            const resultadoFormatado = {
+              ...resultadoApi,
+              pontuacaoTotal: pontuacaoOriginal, // Usar valor do backend
+              dataTentativa: resultadoApi.dataConclusao || resultadoApi.dataTentativa || new Date().toISOString()
+            };
+            
+            console.log('📊 Resultado formatado (usando valores do backend):', JSON.stringify(resultadoFormatado, null, 2));
+            
+            localStorage.setItem(`quiz_result_${finalTentativaId}`, JSON.stringify(resultadoFormatado));
+            console.log('✅ Resultado salvo com sucesso no localStorage!');
+          }
+          
           console.log('✅ readyToFinalize definido como true');
           // Não finalizar automaticamente - usuário deve clicar em "Finalizar Teste"
         } else if (response.proximaQuestao) {
           // Passar automaticamente para próxima questão após 2 segundos
           console.log('⏭️ Passando para próxima questão em 2 segundos...');
+          
+          // ✅ USAR PONTUAÇÃO DO BACKEND
+          // Segundo o GUIA: O backend já calculou pontosGanhos corretamente
+          // pontosGanhos = 1 se correto, 0 se incorreto (já vem calculado)
+          console.log('📊 ========== ATUALIZANDO PONTUAÇÃO ==========');
+          console.log('📊 Pontuação atual (antes):', progresso.pontuacaoAtual);
+          console.log('📊 Pontos ganhos do BACKEND:', response.pontosGanhos);
+          console.log('📊 Resposta correta?', response.respostaCorreta);
+          console.log('📊 O backend já calculou tudo! Usando valor direto.');
+          
           setTimeout(() => {
             setQuestions([response.proximaQuestao!]);
             setMostrandoFeedback(false);
@@ -209,13 +385,43 @@ export function QuizAttempt() {
             setCorrectOptionId(null); // Limpar opção correta para próxima questão
             setReadyToFinalize(false); // Resetar estado de finalização
             
-            // Atualizar progresso manualmente
-            setProgresso(prev => ({
-              ...prev,
-              questaoAtual: prev.questaoAtual + 1,
-              pontuacaoAtual: prev.pontuacaoAtual + (response.respostaCorreta ? response.pontosGanhos : 0),
-              percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
-            }));
+            // ✅ ATUALIZAR PROGRESSO USANDO VALOR DO BACKEND
+            // O backend já retornou pontosGanhos correto (1 ou 0)
+            setProgresso(prev => {
+              const pontuacaoAnterior = prev.pontuacaoAtual;
+              const pontosGanhosBackend = response.pontosGanhos;
+              const novaPontuacao = pontuacaoAnterior + pontosGanhosBackend;
+              
+              console.log('📊 ========== CÁLCULO DE PONTUAÇÃO ==========');
+              console.log('📊 Questão:', prev.questaoAtual + 1);
+              console.log('📊 Pontuação ANTERIOR (antes desta questão):', pontuacaoAnterior);
+              console.log('📊 Pontos ganhos do BACKEND para esta questão:', pontosGanhosBackend);
+              console.log('📊 Resposta estava correta?', response.respostaCorreta);
+              console.log('📊 Cálculo:', pontuacaoAnterior, '+', pontosGanhosBackend, '=', novaPontuacao);
+              console.log('📊 Nova pontuação TOTAL:', novaPontuacao);
+              
+              // 🔍 Rastrear histórico para debug
+              const novoHistorico = {
+                questao: prev.questaoAtual + 1,
+                respostaCorreta: response.respostaCorreta,
+                pontosGanhos: pontosGanhosBackend,
+                pontuacaoAntes: pontuacaoAnterior,
+                pontuacaoDepois: novaPontuacao
+              };
+              
+              setPontuacaoHistory(prevHistory => {
+                const novoHistoricoCompleto = [...prevHistory, novoHistorico];
+                console.log('📊 Histórico completo de pontuação:', novoHistoricoCompleto);
+                return novoHistoricoCompleto;
+              });
+              
+              return {
+                ...prev,
+                questaoAtual: prev.questaoAtual + 1,
+                pontuacaoAtual: novaPontuacao, // Somar valor do backend diretamente
+                percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
+              };
+            });
             
             // Reiniciar timer para próxima questão (30 minutos)
             setTimeLeft(30 * 60);
@@ -330,8 +536,33 @@ export function QuizAttempt() {
 
   // Todos os hooks devem estar no início, antes de qualquer return condicional
   useEffect(() => {
+    // ✅ RESETAR COMPLETAMENTE quando quizId mudar
+    console.log('🔄 useEffect: Quiz ID mudou ou componente montou');
+    console.log('📊 Quiz ID atual:', quizId);
+    console.log('🔄 Resetando todos os estados antes de carregar novo quiz...');
+    
+    // Resetar todos os estados
+    setProgresso({
+      questaoAtual: 0,
+      totalQuestoes: 0,
+      percentualCompleto: 0,
+      pontuacaoAtual: 0,
+      tempoGasto: 0
+    });
+    setPontuacaoHistory([]);
+    setAnswers([]);
+    setFeedback(null);
+    setCorrectOptionId(null);
+    setMostrandoFeedback(false);
+    setReadyToFinalize(false);
+    setQuizCompleted(false);
+    setQuizStarted(false);
+    setTentativaId(null);
+    setError(null);
+    
+    console.log('✅ Estados resetados! Carregando novo quiz...');
     loadQuiz();
-  }, [quizId]);
+  }, [quizId]); // Resetar quando quizId mudar
 
   // Redirecionar automaticamente para o dashboard (aba quiz) quando quiz for concluído
   useEffect(() => {

@@ -200,8 +200,28 @@ export interface Category {
 export const studentService = {
   // 1. Dashboard do Aluno
   async getDashboard(): Promise<StudentDashboard> {
+    console.log('🔄 Buscando dashboard do aluno...');
     const response = await api.get('/api/aluno/dashboard');
-    return response.data.data || response.data;
+    const data = response.data.data || response.data;
+    
+    console.log('📊 Dashboard recebido da API:', JSON.stringify(data, null, 2));
+    
+    // 🔧 MAPEAR: Backend pode retornar totalPontos, mas interface espera pontos
+    const dashboardMapeado: StudentDashboard = {
+      ...data,
+      pontos: data.totalPontos || data.pontos || 0,
+      quizzesCompletos: data.quizzesCompletos || 0,
+      mediaGeral: data.mediaGeral || 0,
+      posicaoRanking: data.posicaoRanking || 0,
+      sequencia: data.sequenciaDias || data.sequencia || 0,
+      totalUsuarios: data.totalUsuarios || 0,
+      quizzesRecentes: data.quizzesRecentes || []
+    };
+    
+    console.log('📊 Dashboard mapeado:', JSON.stringify(dashboardMapeado, null, 2));
+    console.log('📊 Pontos no dashboard:', dashboardMapeado.pontos);
+    
+    return dashboardMapeado;
   },
 
   // 2. Quizzes Disponíveis
@@ -454,11 +474,41 @@ export const studentService = {
     return this.getDashboard();
   },
 
-  // Método removido - não usamos mais endpoints de tentativas individuais
-  // async getQuizResult(tentativaId: number): Promise<QuizResult> {
-  //   const response = await api.get(`/api/aluno/tentativas/${tentativaId}`);
-  //   return response.data.data || response.data;
-  // },
+  // Buscar resultado de uma tentativa específica
+  async getQuizResult(tentativaId: number): Promise<QuizResult> {
+    try {
+      console.log('🔄 Buscando resultado da tentativa da API...');
+      console.log('📊 Tentativa ID:', tentativaId);
+      
+      const response = await api.get(`/api/aluno/tentativas/${tentativaId}`);
+      
+      console.log('✅ Resultado encontrado na API!');
+      console.log('📊 Status:', response.status);
+      console.log('📄 Dados:', JSON.stringify(response.data, null, 2));
+      
+      const result = response.data.data || response.data;
+      
+      // Mapear campos se necessário (API pode retornar pontuacaoFinal)
+      if (result && typeof result === 'object') {
+        const resultadoApi = result as any;
+        return {
+          ...resultadoApi,
+          pontuacaoTotal: resultadoApi.pontuacaoFinal || resultadoApi.pontuacaoTotal || 0,
+          dataTentativa: resultadoApi.dataConclusao || resultadoApi.dataTentativa || new Date().toISOString()
+        } as QuizResult;
+      }
+      
+      return result;
+    } catch (error: any) {
+      console.error('❌ Erro ao buscar resultado da API:', error);
+      console.error('🔍 Detalhes:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
 
   // Método removido - não usamos mais endpoints de tentativas individuais
   // async getAttemptHistory(params?: any): Promise<{ items: QuizResult[], currentPage: number, pageSize: number, totalPages: number, totalCount: number }> {
