@@ -16,6 +16,7 @@ import { HomeAdmin } from "../pages/admin/tabs/home";
 import { ProfileAdminPage } from "../pages/admin/tabs/profile";
 import { ReportsAdmin } from "../pages/admin/tabs/reports";
 import { RankingAdmin } from "../pages/admin/tabs/ranking";
+import { UsersAdmin } from "../pages/admin/tabs/users";
 import { QuizAttempt } from "../pages/dashboard/QuizAttempt";
 import { QuizResult } from "../pages/dashboard/QuizResult";
 
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/register",
-    element: <Register />,
+    element: (
+      <ProtectedRoute allowedRoles={["2"]}>
+        <Register />
+      </ProtectedRoute>
+    ),
   },
   {
     path: "/dashboard",
@@ -80,6 +85,7 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: "", element: <HomeAdmin /> },
+      { path: "users", element: <UsersAdmin /> },
       { path: "ranking", element: <RankingAdmin /> },
       { path: "reports", element: <ReportsAdmin /> },
       { path: "profile", element: <ProfileAdminPage /> },

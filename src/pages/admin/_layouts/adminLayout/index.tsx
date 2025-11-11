@@ -11,6 +11,7 @@ export function AdminLayout() {
     if (pathname.includes("/admin/profile")) return "profile";
     if (pathname.includes("/admin/ranking")) return "ranking";
     if (pathname.includes("/admin/reports")) return "reports";
+    if (pathname.includes("/admin/users")) return "users";
     if (pathname === "/admin") return "home";
     return "home"; // padrão
   };
@@ -23,6 +24,7 @@ export function AdminLayout() {
     if (tab === "home") navigate("/admin");
     if (tab === "ranking") navigate("/admin/ranking");
     if (tab === "reports") navigate("/admin/reports");
+    if (tab === "users") navigate("/admin/users");
     if (tab === "profile") navigate("/admin/profile");
   };
 
@@ -34,6 +36,7 @@ export function AdminLayout() {
     >
       <Header isTeacher={false} isAdmin={true}>
         <TabsTrigger value="home">Início</TabsTrigger>
+        <TabsTrigger value="users">Usuários</TabsTrigger>
         <TabsTrigger value="ranking">Ranking</TabsTrigger>
         <TabsTrigger value="reports">Relatórios</TabsTrigger>
         <TabsTrigger value="profile">Perfil</TabsTrigger>

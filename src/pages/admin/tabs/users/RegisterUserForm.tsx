@@ -1,15 +1,16 @@
-import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, CircleUser, Wrench } from "lucide-react";
 import { RadioGroup } from "radix-ui";
-import { userType } from "../../mocks/register";
 import { useState } from "react";
-import { useNavigate } from "react-router";
-import { useAuth } from "../../hooks/userAuth";
-import type { RegisterData } from "../../types/auth";
+import type { RegisterData } from "../../../../types/auth";
+import api from "../../../../services/api";
 
-export function Register() {
-  const [selectedUserType, setSelectedUserType] = useState<string | null>(
-    "Aluno"
-  );
+interface RegisterUserFormProps {
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps) {
+  const [selectedUserType, setSelectedUserType] = useState<string | null>("Aluno");
   const [formData, setFormData] = useState<RegisterData>({
     username: "",
     email: "",
@@ -23,24 +24,37 @@ export function Register() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const selectedType = userType.find((ut) => ut.title === selectedUserType);
-  const { register } = useAuth();
-  let navigate = useNavigate();
+  // Apenas Aluno e Professor podem ser cadastrados
+  const userTypes = [
+    {
+      title: "Aluno",
+      description: "Participe de quizzes e acompanhe seu progresso",
+      icon: CircleUser,
+    },
+    {
+      title: "Professor",
+      description: "Crie e gerencie quizzes para seus alunos",
+      icon: Wrench,
+      fields: [
+        { label: "Instituição de Ensino", placeholder: "Nome da Escola" },
+        {
+          label: "Área de Especialização",
+          placeholder: "EX: Matemática, História, Ciências",
+        },
+      ],
+    },
+  ];
 
-  const goBack = () => {
-    navigate(-1);
-  };
+  const selectedType = userTypes.find((ut) => ut.title === selectedUserType);
 
   // Mapear tipo de usuário para código da API
-  const getRoleCode = (userType: string): "0" | "1" | "2" => {
+  const getRoleCode = (userType: string): "0" | "1" => {
     switch (userType) {
       case "Aluno": return "0";
       case "Professor": return "1";
-      case "Técnico": return "2";
       default: return "0";
     }
   };
@@ -129,7 +143,7 @@ export function Register() {
         ...formData,
         role: getRoleCode(selectedUserType || "Aluno"),
         username: formData.username.toLowerCase().replace(/\s+/g, "."),
-        ConfirmPassword: confirmPassword, // Incluir confirmação de senha
+        ConfirmPassword: confirmPassword,
       };
 
       // Converter data de nascimento para formato ISO se fornecida
@@ -138,23 +152,57 @@ export function Register() {
         registerData.dataNascimento = date.toISOString();
       }
 
-      const response = await register(registerData);
-      setSuccess(true);
+      // Salvar token e usuário atuais para preservar sessão do técnico
+      const currentToken = localStorage.getItem('token');
+      const currentUser = localStorage.getItem('user');
+
+      try {
+        // Preparar dados com ConfirmPassword
+        const dataWithConfirmPassword = {
+          ...registerData,
+          ConfirmPassword: registerData.ConfirmPassword || registerData.password
+        };
+
+        // Chamar API diretamente (não usar authService.register para não fazer login)
+        await api.post('/api/auth/register', dataWithConfirmPassword);
+      } finally {
+        // Sempre restaurar sessão do técnico (não fazer login como usuário cadastrado)
+        // Isso garante que mesmo se a API retornar um token, o técnico permanece logado
+        if (currentToken) {
+          localStorage.setItem('token', currentToken);
+        } else {
+          localStorage.removeItem('token');
+        }
+        if (currentUser) {
+          localStorage.setItem('user', currentUser);
+        } else {
+          localStorage.removeItem('user');
+        }
+      }
+
+      // Limpar formulário
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        firstName: "",
+        lastName: "",
+        cpf: "",
+        dataNascimento: "",
+        role: "0"
+      });
+      setConfirmPassword("");
+      setSelectedUserType("Aluno");
       
-      // Redirecionar após 2 segundos para a tela correta baseada no role
-      setTimeout(() => {
-        const redirectPath = (response as any)?.redirectPath || "/dashboard";
-        navigate(redirectPath);
-      }, 2000);
+      // Chamar callback de sucesso
+      onSuccess();
 
     } catch (error: any) {
       let errorMessage = "Erro ao criar conta. Tente novamente.";
       
       if (error.response) {
-        // Erro da API
         errorMessage = error.response.data?.message || `Erro ${error.response.status}: ${error.response.statusText}`;
       } else if (error.request) {
-        // Erro de rede
         errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
       } else if (error.code === 'ERR_NETWORK') {
         errorMessage = "Erro de rede. Verifique se a API está funcionando.";
@@ -168,36 +216,14 @@ export function Register() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="bg-[#C6DBEF] h-full flex-1 flex justify-center items-center overflow-auto py-11">
-        <div className="bg-white p-10 min-w-96 rounded-4xl text-center">
-          <div className="space-y-4">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
-              <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-green-600">Conta criada com sucesso!</h3>
-            <p className="text-gray-600">Redirecionando para o dashboard...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-[#C6DBEF] h-full flex-1 flex justify-center items-center overflow-auto py-11">
-      <div className="bg-white p-10 min-w-96 rounded-4xl">
-        <div className="flex gap-5 items-center">
-          <button onClick={goBack} disabled={loading}>
-            <ArrowLeft />
-          </button>
-
+    <div className="bg-[#C6DBEF] min-h-full w-full flex justify-center items-start overflow-auto py-11 px-4">
+      <div className="bg-white p-10 min-w-96 rounded-4xl max-w-2xl w-full">
+        <div className="flex gap-5 items-center mb-6">
           <div className="space-y-2">
-            <h4 className="text-base">Criar Conta</h4>
+            <h4 className="text-base">Cadastrar Usuário</h4>
             <span className="text-sm text-[#404040]">
-              Preencha seus dados para se cadastrar
+              Preencha os dados para cadastrar um novo usuário
             </span>
           </div>
         </div>
@@ -209,6 +235,59 @@ export function Register() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4 mt-8">
+          {/* Tipo de Usuário */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Tipo de Usuário</label>
+            <RadioGroup.Root
+              value={selectedUserType || undefined}
+              onValueChange={(value) => setSelectedUserType(value)}
+              className="space-y-2.5"
+              disabled={loading}
+            >
+              {userTypes.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div className="flex items-center gap-2.5" key={item.title}>
+                    <RadioGroup.Item
+                      className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      value={item.title}
+                    >
+                      <RadioGroup.Indicator>
+                        <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                      </RadioGroup.Indicator>
+                    </RadioGroup.Item>
+
+                    <Icon />
+
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{item.title}</span>
+                      <span className="text-[#404040] text-sm">
+                        {item.description}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </RadioGroup.Root>
+          </div>
+
+          {/* Campos específicos do tipo de usuário */}
+          {selectedType && selectedType.fields && (
+            <div className="mt-4 space-y-2">
+              {selectedType.fields.map((field: any) => (
+                <div className="flex flex-col gap-2" key={field.label}>
+                  <label className="text-sm font-medium">{field.label}</label>
+                  <input
+                    type="text"
+                    placeholder={field.placeholder}
+                    className="bg-[#F3F3F5] border border-black/10 py-2.5 rounded-lg px-3 text-sm text-[#717182] w-full"
+                    disabled={loading}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Nome Completo - dividido em firstName e lastName */}
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
@@ -369,68 +448,26 @@ export function Register() {
             </div>
           </div>
 
-          {/* Tipo de Usuário */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Tipo de Usuário</label>
-            <RadioGroup.Root
-              value={selectedUserType || undefined}
-              onValueChange={(value) => setSelectedUserType(value)}
-              className="space-y-2.5"
+          <div className="flex gap-4 pt-4">
+            <button 
+              type="submit"
               disabled={loading}
+              className="flex-1 text-white bg-[#3182BD] rounded-4xl py-3 px-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {userType.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div className="flex items-center gap-2.5" key={item.title}>
-                    <RadioGroup.Item
-                      className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      value={item.title}
-                    >
-                      <RadioGroup.Indicator>
-                        <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                      </RadioGroup.Indicator>
-                    </RadioGroup.Item>
-
-                    <Icon />
-
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{item.title}</span>
-                      <span className="text-[#404040] text-sm">
-                        {item.description}
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </RadioGroup.Root>
+              {loading ? "Cadastrando..." : "Cadastrar Usuário"}
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              disabled={loading}
+              className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancelar
+            </button>
           </div>
-
-          {/* Campos específicos do tipo de usuário */}
-          {selectedType && selectedType.fields && (
-            <div className="mt-4 space-y-2">
-              {selectedType.fields.map((field) => (
-                <div className="flex flex-col gap-2" key={field.label}>
-                  <label className="text-sm font-medium">{field.label}</label>
-                  <input
-                    type="text"
-                    placeholder={field.placeholder}
-                    className="bg-[#F3F3F5] border border-black/10 py-2.5 rounded-lg px-3 text-sm text-[#717182] w-full"
-                    disabled={loading}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
-          <button 
-            type="submit"
-            disabled={loading}
-            className="text-white bg-[#3182BD] w-full rounded-4xl py-3 px-2 font-bold mt-10 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "Criando conta..." : "Criar Conta"}
-          </button>
         </form>
       </div>
     </div>
   );
 }
+

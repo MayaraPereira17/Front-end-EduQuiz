@@ -58,16 +58,28 @@ export interface AlunosResponseDTO {
   totalAlunos: number;
 }
 
+export interface ProfessorDTO {
+  id: number;
+  nome: string;
+  email: string;
+  instituicao?: string;
+  areaEspecializacao?: string;
+  totalQuizzes?: number;
+  dataCadastro: string;
+}
+
+export interface ProfessoresResponseDTO {
+  professores: ProfessorDTO[];
+  totalProfessores: number;
+}
+
 class TecnicoService {
   // 1. Dashboard do Técnico
   async getDashboard(): Promise<DashboardTecnicoDTO> {
     try {
-      console.log('🔍 Buscando dashboard do técnico...');
       const response = await api.get('/api/tecnico/dashboard');
-      console.log('✅ Dashboard obtido:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ Erro ao obter dashboard:', error);
       throw new Error(`Erro ao obter dashboard: ${error.response?.data?.message || error.message}`);
     }
   }
@@ -75,13 +87,10 @@ class TecnicoService {
   // 2. Listar Alunos com Ranking
   async getAlunos(busca?: string): Promise<AlunosResponseDTO> {
     try {
-      console.log('🔍 Buscando alunos do técnico...', busca ? `(busca: ${busca})` : '');
       const params = busca ? { busca } : {};
       const response = await api.get('/api/tecnico/alunos', { params });
-      console.log('✅ Alunos obtidos:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ Erro ao obter alunos:', error);
       throw new Error(`Erro ao obter alunos: ${error.response?.data?.message || error.message}`);
     }
   }
@@ -89,12 +98,9 @@ class TecnicoService {
   // 3. Relatório de Desempenho
   async getRelatorioDesempenho(): Promise<RelatorioDesempenhoDTO> {
     try {
-      console.log('🔍 Buscando relatório de desempenho...');
       const response = await api.get('/api/tecnico/relatorio-desempenho');
-      console.log('✅ Relatório obtido:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ Erro ao obter relatório:', error);
       throw new Error(`Erro ao obter relatório: ${error.response?.data?.message || error.message}`);
     }
   }
@@ -102,12 +108,9 @@ class TecnicoService {
   // 4. Perfil do Técnico
   async getPerfil(): Promise<PerfilTecnicoDTO> {
     try {
-      console.log('🔍 Buscando perfil do técnico...');
       const response = await api.get('/api/tecnico/perfil');
-      console.log('✅ Perfil obtido:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ Erro ao obter perfil:', error);
       throw new Error(`Erro ao obter perfil: ${error.response?.data?.message || error.message}`);
     }
   }
@@ -119,13 +122,68 @@ class TecnicoService {
     email: string;
   }): Promise<PerfilTecnicoDTO> {
     try {
-      console.log('🔍 Atualizando perfil do técnico...', dadosPerfil);
       const response = await api.put('/api/tecnico/perfil', dadosPerfil);
-      console.log('✅ Perfil atualizado:', response.data);
       return response.data;
     } catch (error: any) {
-      console.error('❌ Erro ao atualizar perfil:', error);
       throw new Error(`Erro ao atualizar perfil: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 6. Atualizar Aluno (pelo técnico)
+  async updateAluno(alunoId: number, dadosAluno: {
+    nome?: string;
+    email?: string;
+    idade?: number;
+  }): Promise<AlunoRankingDTO> {
+    try {
+      const response = await api.put(`/api/tecnico/alunos/${alunoId}`, dadosAluno);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao atualizar aluno: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 7. Deletar Aluno (pelo técnico)
+  async deleteAluno(alunoId: number): Promise<void> {
+    try {
+      await api.delete(`/api/tecnico/alunos/${alunoId}`);
+    } catch (error: any) {
+      throw new Error(`Erro ao deletar aluno: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 8. Listar Professores
+  async getProfessores(busca?: string): Promise<ProfessoresResponseDTO> {
+    try {
+      const params = busca ? { busca } : {};
+      const response = await api.get('/api/tecnico/professores', { params });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao obter professores: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 9. Atualizar Professor (pelo técnico)
+  async updateProfessor(professorId: number, dadosProfessor: {
+    nome?: string;
+    email?: string;
+    instituicao?: string;
+    areaEspecializacao?: string;
+  }): Promise<ProfessorDTO> {
+    try {
+      const response = await api.put(`/api/tecnico/professores/${professorId}`, dadosProfessor);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao atualizar professor: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 10. Deletar Professor (pelo técnico)
+  async deleteProfessor(professorId: number): Promise<void> {
+    try {
+      await api.delete(`/api/tecnico/professores/${professorId}`);
+    } catch (error: any) {
+      throw new Error(`Erro ao deletar professor: ${error.response?.data?.message || error.message}`);
     }
   }
 }

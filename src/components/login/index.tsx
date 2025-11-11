@@ -76,12 +76,6 @@ export function LoginForm() {
         </button>
       </form>
 
-      <div className="flex gap-1">
-        <span className="text-sm text-[#717171]">Não tem uma conta?</span>
-        <Link className="font-medium text-sm" to="/register">
-          Cadastre-se aqui
-        </Link>
-      </div>
     </div>
   );
 }

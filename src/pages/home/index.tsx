@@ -152,12 +152,6 @@ export function Home() {
                 </button>
               </form>
 
-              <div className="flex gap-1">
-                <span className=" text-sm text-[#717171]">
-                  Não tem uma conta?
-                </span>
-                <a className="font-medium text-sm">Cadastre-se aqui</a>
-              </div>
             </div>
           </div>
         </div>
