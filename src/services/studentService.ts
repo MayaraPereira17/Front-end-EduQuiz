@@ -125,6 +125,14 @@ export interface StudentDashboard {
   pontos: number;
   totalUsuarios: number;
   quizzesRecentes: QuizRecent[];
+  timesEscalados?: TimeEscalacao[];
+}
+
+export interface TimeEscalacao {
+  id: number;
+  nome: string;
+  dataCriacao: string;
+  dataEscalacao: string;
 }
 
 export interface QuizRecent {
@@ -212,7 +220,8 @@ export const studentService = {
       posicaoRanking: data.posicaoRanking || 0,
       sequencia: data.sequenciaDias || data.sequencia || 0,
       totalUsuarios: data.totalUsuarios || 0,
-      quizzesRecentes: data.quizzesRecentes || []
+      quizzesRecentes: data.quizzesRecentes || [],
+      timesEscalados: data.timesEscalados || []
     };
     
     return dashboardMapeado;
@@ -443,7 +452,5 @@ export const studentService = {
       throw error;
     }
   },
-
-
 
 };

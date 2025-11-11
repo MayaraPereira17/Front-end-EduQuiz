@@ -6,6 +6,7 @@ import { studentService } from "../../../services/studentService";
 import type { StudentDashboard as StudentDashboardType } from "../../../services/studentService";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { TeamNotification } from "./TeamNotification";
 
 export function Home() {
   const { user } = useAuth();
@@ -29,6 +30,7 @@ export function Home() {
         sequencia: 0,
         totalUsuarios: 0,
         quizzesRecentes: [],
+        timesEscalados: [],
       });
     } finally {
       setLoading(false);
@@ -51,6 +53,11 @@ export function Home() {
           Continue aprendendo e melhorando sua pontuação.
         </span>
       </div>
+
+      {/* Notificações de Times Escalados */}
+      {stats?.timesEscalados && stats.timesEscalados.length > 0 && (
+        <TeamNotification times={stats.timesEscalados} />
+      )}
 
       {/* Primeira linha de graficos */}
       <div className="grid grid-cols-5 gap-7">

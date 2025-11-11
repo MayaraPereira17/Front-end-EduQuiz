@@ -73,6 +73,32 @@ export interface ProfessoresResponseDTO {
   totalProfessores: number;
 }
 
+export interface TimeDTO {
+  id: number;
+  nome: string;
+  dataCriacao: string;
+  jogadores: JogadorTimeDTO[];
+}
+
+export interface JogadorTimeDTO {
+  id: number;
+  alunoId: number;
+  nome: string;
+  email: string;
+  posicao: number;
+  scoreGeral: number;
+}
+
+export interface TimesResponseDTO {
+  times: TimeDTO[];
+  totalTimes: number;
+}
+
+export interface CriarTimeDTO {
+  nome: string;
+  jogadoresIds: number[];
+}
+
 class TecnicoService {
   // 1. Dashboard do Técnico
   async getDashboard(): Promise<DashboardTecnicoDTO> {
@@ -184,6 +210,71 @@ class TecnicoService {
       await api.delete(`/api/tecnico/professores/${professorId}`);
     } catch (error: any) {
       throw new Error(`Erro ao deletar professor: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 11. Listar Times
+  async getTimes(): Promise<TimesResponseDTO> {
+    try {
+      const response = await api.get('/api/tecnico/times');
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao obter times: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 12. Criar Time
+  async criarTime(dadosTime: CriarTimeDTO): Promise<TimeDTO> {
+    try {
+      const response = await api.post('/api/tecnico/times', dadosTime);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao criar time: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 13. Adicionar Jogador ao Time
+  async adicionarJogadorAoTime(timeId: number, alunoId: number): Promise<TimeDTO> {
+    try {
+      const response = await api.post(`/api/tecnico/times/${timeId}/jogadores`, { alunoId });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao adicionar jogador: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 14. Remover Jogador do Time
+  async removerJogadorDoTime(timeId: number, jogadorId: number): Promise<void> {
+    try {
+      await api.delete(`/api/tecnico/times/${timeId}/jogadores/${jogadorId}`);
+    } catch (error: any) {
+      throw new Error(`Erro ao remover jogador: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 15. Deletar Time
+  async deleteTime(timeId: number): Promise<void> {
+    try {
+      await api.delete(`/api/tecnico/times/${timeId}`);
+    } catch (error: any) {
+      throw new Error(`Erro ao deletar time: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  // 16. Exportar Relatório (PDF/Excel)
+  async exportarRelatorio(formato: 'pdf' | 'excel', quantidade?: number): Promise<Blob> {
+    try {
+      const params: any = { formato };
+      if (quantidade) {
+        params.quantidade = quantidade;
+      }
+      const response = await api.get('/api/tecnico/relatorio-desempenho/exportar', {
+        params,
+        responseType: 'blob'
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(`Erro ao exportar relatório: ${error.response?.data?.message || error.message}`);
     }
   }
 }

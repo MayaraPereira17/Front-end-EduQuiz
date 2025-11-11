@@ -1,25 +1,39 @@
 import { useState, useEffect } from "react";
-import { Download, FileText, TrendingUp } from "lucide-react";
+import { Download, FileText, TrendingUp, UserCheck } from "lucide-react";
 import { DetailsStudent } from "./detailsStudent";
-import { tecnicoService, type RelatorioDesempenhoDTO } from "../../../../services/tecnicoService";
+import { tecnicoService, type RelatorioDesempenhoDTO, type AlunoRankingDTO } from "../../../../services/tecnicoService";
+import { TeamManagement } from "./TeamManagement";
+import { EscalarAlunoModal } from "./EscalarAlunoModal";
+import { ExportReportModal } from "./ExportReportModal";
 
 export function ReportsAdmin() {
   const [relatorio, setRelatorio] = useState<RelatorioDesempenhoDTO | null>(null);
+  const [alunos, setAlunos] = useState<AlunoRankingDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showEscalacaoModal, setShowEscalacaoModal] = useState(false);
+  const [alunoParaEscalar, setAlunoParaEscalar] = useState<AlunoRankingDTO | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportLoading, setExportLoading] = useState(false);
 
   const loadRelatorio = async () => {
     try {
       setLoading(true);
       setError(null);
-      console.log('🔍 Carregando relatório de desempenho...');
       
-      const data = await tecnicoService.getRelatorioDesempenho();
-      setRelatorio(data);
-      
-      console.log('✅ Relatório carregado com sucesso:', data);
+      const [relatorioData, alunosData] = await Promise.allSettled([
+        tecnicoService.getRelatorioDesempenho(),
+        tecnicoService.getAlunos()
+      ]);
+
+      if (relatorioData.status === 'fulfilled') {
+        setRelatorio(relatorioData.value);
+      }
+
+      if (alunosData.status === 'fulfilled') {
+        setAlunos(alunosData.value.alunos || []);
+      }
     } catch (error: any) {
-      console.error('❌ Erro ao carregar relatório:', error);
       setError(error.message);
     } finally {
       setLoading(false);
@@ -30,10 +44,30 @@ export function ReportsAdmin() {
     loadRelatorio();
   }, []);
 
-  const handleExportar = () => {
-    // Implementar exportação do relatório
-    console.log('📊 Exportando relatório...');
-    alert('Funcionalidade de exportação será implementada em breve!');
+  const handleExportar = async (formato: 'pdf' | 'excel' = 'pdf', quantidade?: number) => {
+    try {
+      setExportLoading(true);
+      const blob = await tecnicoService.exportarRelatorio(formato, quantidade);
+      
+      // Criar link para download
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `relatorio-desempenho.${formato === 'pdf' ? 'pdf' : 'xlsx'}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error: any) {
+      alert(error.message || "Erro ao exportar relatório");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
+  const handleEscalarAluno = (aluno: AlunoRankingDTO) => {
+    setAlunoParaEscalar(aluno);
+    setShowEscalacaoModal(true);
   };
 
   if (loading) {
@@ -76,7 +110,7 @@ export function ReportsAdmin() {
         </div>
 
         <button 
-          onClick={handleExportar}
+          onClick={() => setShowExportModal(true)}
           className="flex border border-black/10 rounded-lg bg-white py-2.5 px-3 items-center gap-2 text-sm hover:bg-gray-50 transition-colors"
         >
           <Download width={16} height={16} />
@@ -116,6 +150,11 @@ export function ReportsAdmin() {
         </div>
       )}
 
+      {/* Gerenciamento de Times */}
+      {alunos.length > 0 && (
+        <TeamManagement alunos={alunos} onRefresh={loadRelatorio} />
+      )}
+
       <div className="bg-white p-6 rounded-xl border border-black/10 mb-10">
         <div className="flex items-center gap-2 mb-7">
           <FileText color="#2B7FFF" width={20} height={20} />
@@ -128,37 +167,79 @@ export function ReportsAdmin() {
           </div>
         ) : (
           <div className="space-y-4">
-            {relatorio.alunos.map((aluno) => (
-              <div key={aluno.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 font-bold text-lg">
-                        {aluno.nome.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <h6 className="font-semibold text-lg">{aluno.nome}</h6>
-                      <p className="text-sm text-gray-600">
-                        {aluno.totalQuizzes} quizzes realizados
-                      </p>
-                      {aluno.ultimoQuiz && (
-                        <p className="text-xs text-gray-500">
-                          Último quiz: {new Date(aluno.ultimoQuiz).toLocaleDateString()}
+            {relatorio.alunos.map((aluno) => {
+              const alunoRanking = alunos.find(a => a.id === aluno.id);
+              return (
+                <div key={aluno.id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <span className="text-blue-600 font-bold text-lg">
+                          {aluno.nome.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <h6 className="font-semibold text-lg">{aluno.nome}</h6>
+                        <p className="text-sm text-gray-600">
+                          {aluno.totalQuizzes} quizzes realizados
                         </p>
+                        {aluno.ultimoQuiz && (
+                          <p className="text-xs text-gray-500">
+                            Último quiz: {new Date(aluno.ultimoQuiz).toLocaleDateString()}
+                          </p>
+                        )}
+                        {alunoRanking && (
+                          <p className="text-xs text-blue-600 font-medium">
+                            Posição no Ranking: #{alunoRanking.posicao}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <p className="text-2xl font-bold text-green-600">{aluno.scoreGeral}%</p>
+                        <p className="text-sm text-gray-600">Score Geral</p>
+                      </div>
+                      {alunoRanking && (
+                        <button
+                          onClick={() => handleEscalarAluno(alunoRanking)}
+                          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                          title="Escalar para o time"
+                        >
+                          <UserCheck className="w-4 h-4" />
+                          Escalar
+                        </button>
                       )}
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-bold text-green-600">{aluno.scoreGeral}%</p>
-                    <p className="text-sm text-gray-600">Score Geral</p>
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
+
+      {/* Modal de Escalação */}
+      {alunoParaEscalar && (
+        <EscalarAlunoModal
+          isOpen={showEscalacaoModal}
+          onClose={() => {
+            setShowEscalacaoModal(false);
+            setAlunoParaEscalar(null);
+          }}
+          aluno={alunoParaEscalar}
+          onSuccess={loadRelatorio}
+        />
+      )}
+
+      {/* Modal de Exportação */}
+      <ExportReportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        onExport={handleExportar}
+        totalAlunos={relatorio?.totalAlunos || alunos.length}
+        loading={exportLoading}
+      />
     </div>
   );
 }
