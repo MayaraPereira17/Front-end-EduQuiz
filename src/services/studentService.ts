@@ -200,11 +200,8 @@ export interface Category {
 export const studentService = {
   // 1. Dashboard do Aluno
   async getDashboard(): Promise<StudentDashboard> {
-    console.log('🔄 Buscando dashboard do aluno...');
     const response = await api.get('/api/aluno/dashboard');
     const data = response.data.data || response.data;
-    
-    console.log('📊 Dashboard recebido da API:', JSON.stringify(data, null, 2));
     
     // 🔧 MAPEAR: Backend pode retornar totalPontos, mas interface espera pontos
     const dashboardMapeado: StudentDashboard = {
@@ -218,73 +215,35 @@ export const studentService = {
       quizzesRecentes: data.quizzesRecentes || []
     };
     
-    console.log('📊 Dashboard mapeado:', JSON.stringify(dashboardMapeado, null, 2));
-    console.log('📊 Pontos no dashboard:', dashboardMapeado.pontos);
-    
     return dashboardMapeado;
   },
 
   // 2. Quizzes Disponíveis
   async getAvailableQuizzes(): Promise<StudentQuiz[]> {
     try {
-      console.log('🔄 Buscando quizzes do endpoint /api/aluno/quizzes...');
       const response = await api.get('/api/aluno/quizzes');
-      
-      console.log('✅ Endpoint /api/aluno/quizzes funcionando!');
-      console.log('📊 Status:', response.status);
-      console.log('📦 Headers:', response.headers);
-      console.log('📄 Data completa:', JSON.stringify(response.data, null, 2));
-      console.log('🔍 Data.data:', response.data.data);
-      console.log('🔍 Data direto:', response.data);
       
       // Tentar diferentes estruturas de resposta
       let result;
       if (response.data.data && Array.isArray(response.data.data)) {
         result = response.data.data;
-        console.log('📋 Usando response.data.data (array)');
       } else if (Array.isArray(response.data)) {
         result = response.data;
-        console.log('📋 Usando response.data (array direto)');
       } else {
         result = [];
-        console.log('⚠️ Nenhum array encontrado, retornando array vazio');
-      }
-      
-      console.log('🎯 Resultado final:', result);
-      console.log('📊 Quantidade de quizzes encontrados:', result.length);
-      
-      // Verificar se os quizzes têm os campos necessários
-      if (result.length > 0) {
-        console.log('🔍 Verificando campos do primeiro quiz:');
-        console.log('- quizConcluido:', result[0].quizConcluido);
-        console.log('- tentativasRestantes:', result[0].tentativasRestantes);
-        console.log('- Quiz completo:', result[0]);
       }
       
       return result;
     } catch (error: any) {
-      console.error('❌ Erro ao buscar quizzes do endpoint /api/aluno/quizzes:', error);
-      console.error('🔍 Detalhes do erro:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data
-      });
-      
       // Se o endpoint específico do aluno não existir, tentar usar o endpoint do professor
       try {
-        console.log('🔄 Tentando usar endpoint do professor como fallback...');
         const professorResponse = await api.get('/api/professor/quizzes');
         const allQuizzes = professorResponse.data.data || professorResponse.data;
-        
-        console.log('📊 Quizzes do professor encontrados:', allQuizzes.length);
         
         // Filtrar apenas quizzes públicos e ativos
         const publicQuizzes = allQuizzes.filter((quiz: any) => 
           (quiz.publico === true || quiz.publicado === true) && quiz.ativo !== false
         );
-        
-        console.log('📊 Quizzes públicos após filtro:', publicQuizzes.length);
         
         // Transformar para formato do aluno
         const studentQuizzes: StudentQuiz[] = publicQuizzes.map((quiz: any) => ({
@@ -301,11 +260,8 @@ export const studentService = {
           tentativasRestantes: quiz.tentativasRestantes || 1
         }));
         
-        console.log('✅ Quizzes públicos transformados:', studentQuizzes);
         return studentQuizzes;
       } catch (fallbackError) {
-        console.error('❌ Erro no fallback do professor:', fallbackError);
-        
         // Se tudo falhar, retornar dados mockados
         const mockQuizzes: StudentQuiz[] = [
           {
@@ -336,7 +292,6 @@ export const studentService = {
           }
         ];
         
-        console.log('🔄 Usando dados mockados:', mockQuizzes);
         return mockQuizzes;
       }
     }
@@ -345,27 +300,10 @@ export const studentService = {
   // 3. Detalhes do Quiz
   async getQuizForAttempt(quizId: number): Promise<StudentQuizDetail> {
     try {
-      console.log('🔄 StudentService: Buscando detalhes do quiz...');
-      console.log('📊 Quiz ID:', quizId);
-      
       const response = await api.get(`/api/aluno/quizzes/${quizId}`);
-      
-      console.log('✅ StudentService: Quiz encontrado!');
-      console.log('📊 Status:', response.status);
-      console.log('📄 Data completa:', JSON.stringify(response.data, null, 2));
-      
       const result = response.data.data || response.data;
-      console.log('🎯 Resultado final:', result);
-      
       return result;
     } catch (error: any) {
-      console.error('❌ StudentService: Erro ao buscar quiz:', error);
-      console.error('🔍 Detalhes do erro:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data
-      });
       throw error;
     }
   },
@@ -373,29 +311,9 @@ export const studentService = {
   // 4. Responder Quiz
   async submitQuizAttempt(quizId: number, attempt: QuizAttempt): Promise<QuizResult> {
     try {
-      console.log('🔄 Submetendo tentativa de quiz...');
-      console.log('📊 Quiz ID:', quizId);
-      console.log('📊 Tentativa:', JSON.stringify(attempt, null, 2));
-      console.log('📊 URL:', `/api/aluno/quizzes/${quizId}/responder`);
-      
       const response = await api.post(`/api/aluno/quizzes/${quizId}/responder`, attempt);
-      
-      console.log('✅ Quiz respondido com sucesso!');
-      console.log('📊 Status:', response.status);
-      console.log('📄 Resposta:', response.data);
-      
       return response.data.data || response.data;
     } catch (error: any) {
-      console.error('❌ Erro ao submeter quiz:', error);
-      console.error('🔍 Detalhes do erro:', {
-        message: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        data: error.response?.data,
-        url: `/api/aluno/quizzes/${quizId}/responder`
-      });
-      
-      // Backend foi ajustado - removendo tratamento específico de ranking
       throw error;
     }
   },
@@ -477,15 +395,7 @@ export const studentService = {
   // Buscar resultado de uma tentativa específica
   async getQuizResult(tentativaId: number): Promise<QuizResult> {
     try {
-      console.log('🔄 Buscando resultado da tentativa da API...');
-      console.log('📊 Tentativa ID:', tentativaId);
-      
       const response = await api.get(`/api/aluno/tentativas/${tentativaId}`);
-      
-      console.log('✅ Resultado encontrado na API!');
-      console.log('📊 Status:', response.status);
-      console.log('📄 Dados:', JSON.stringify(response.data, null, 2));
-      
       const result = response.data.data || response.data;
       
       // Mapear campos se necessário (API pode retornar pontuacaoFinal)
@@ -500,12 +410,6 @@ export const studentService = {
       
       return result;
     } catch (error: any) {
-      console.error('❌ Erro ao buscar resultado da API:', error);
-      console.error('🔍 Detalhes:', {
-        message: error.message,
-        status: error.response?.status,
-        data: error.response?.data
-      });
       throw error;
     }
   },
@@ -527,25 +431,15 @@ export const studentService = {
   // Responder questão individual no modo dinâmico
   async answerQuestion(tentativaId: number, questaoId: number, opcaoSelecionadaId: number): Promise<QuestionAnswerResponse> {
     try {
-      console.log('🔄 Enviando resposta para API:', { tentativaId, questaoId, opcaoSelecionadaId });
-      
       const response = await api.post(`/api/aluno/tentativas/${tentativaId}/responder`, {
         questaoId,
         opcaoSelecionadaId
       });
       
-      console.log('✅ Resposta da API recebida:', response.data);
-      console.log('📊 Status da resposta:', response.status);
-      
       // Retornar diretamente response.data se não tiver .data aninhado
       const result = response.data.data || response.data;
-      console.log('🎯 Resultado final:', result);
-      
       return result;
     } catch (error: any) {
-      console.error('❌ Erro na API answerQuestion:', error);
-      console.error('❌ Status do erro:', error.response?.status);
-      console.error('❌ Dados do erro:', error.response?.data);
       throw error;
     }
   },

@@ -19,9 +19,6 @@ export function QuizResult() {
     }
 
     try {
-      console.log('🔄 Carregando resultado do quiz...');
-      console.log('📊 Tentativa ID:', tentativaId);
-      
       setLoading(true);
       setError(null);
       
@@ -29,9 +26,7 @@ export function QuizResult() {
       const cachedResult = localStorage.getItem(`quiz_result_${tentativaId}`);
       if (cachedResult) {
         try {
-          console.log('✅ Resultado encontrado no cache!');
           const resultData = JSON.parse(cachedResult);
-          console.log('📊 Dados do resultado (cache):', resultData);
           setResult(resultData);
           
           // Limpar do localStorage após usar (opcional, pode manter para offline)
@@ -40,45 +35,36 @@ export function QuizResult() {
           // 🔄 Buscar da API também para garantir que está atualizado
           try {
             const apiResult = await studentService.getQuizResult(parseInt(tentativaId));
-            console.log('✅ Resultado atualizado da API:', apiResult);
             setResult(apiResult);
           } catch (apiError) {
-            console.warn('⚠️ Não foi possível buscar da API, usando cache:', apiError);
             // Continuar com o resultado do cache
           }
           
           setLoading(false);
           return;
         } catch (parseError) {
-          console.error('❌ Erro ao parsear cache:', parseError);
           // Continuar para buscar da API
         }
       }
       
       // 2. Buscar da API (fonte de verdade)
-      console.log('🔄 Buscando resultado da API...');
       const apiResult = await studentService.getQuizResult(parseInt(tentativaId));
-      console.log('✅ Resultado encontrado na API:', apiResult);
       setResult(apiResult);
       
       // Salvar no localStorage para acesso rápido futuro
       localStorage.setItem(`quiz_result_${tentativaId}`, JSON.stringify(apiResult));
-      console.log('💾 Resultado salvo no cache para acesso futuro');
       
     } catch (error: any) {
-      console.error("❌ Erro ao carregar resultado:", error);
-      
       // Se deu erro na API, tentar usar cache como último recurso
       const cachedResult = localStorage.getItem(`quiz_result_${tentativaId}`);
       if (cachedResult) {
         try {
-          console.log('⚠️ Usando cache como fallback após erro na API');
           const resultData = JSON.parse(cachedResult);
           setResult(resultData);
           setLoading(false);
           return;
         } catch (parseError) {
-          console.error('❌ Erro ao parsear cache de fallback:', parseError);
+          // Ignorar erro de parse
         }
       }
       
