@@ -13,9 +13,43 @@ import { Carrousel } from "../../components/carrousel";
 import { Link } from "react-router";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/userAuth";
+import { AxiosError } from "axios";
 
 export function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
+  // Estados para o formulário de login
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleLoginSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await login(email, password);
+      // Redirecionar para a tela correta baseada no role do usuário
+      navigate(response.redirectPath);
+    } catch (err) {
+      const axiosError = err as AxiosError<{ message: string }>;
+      const apiMessage = axiosError.response?.data?.message;
+
+      setError(
+        apiMessage || "Erro ao fazer login. Tente novamente mais tarde."
+      );
+    } finally {
+      setLoading(false);
+      setEmail("");
+      setPassword("");
+    }
+  };
 
   return (
     <>
@@ -149,14 +183,18 @@ export function Home() {
                 Faça login para começar sua jornada educacional
               </p>
 
-              <form className="flex flex-col">
+              <form className="flex flex-col" onSubmit={handleLoginSubmit}>
+                {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
+
                 <label className="font-medium mb-1.5">Email</label>
                 <input
                   className="bg-[#E6E6E6] pl-3 py-2.5 rounded-xl"
                   type="email"
                   required
                   placeholder="seu@email.com"
-                ></input>
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
 
                 <label className="font-medium mt-4 mb-1.5">Senha</label>
                 <input
@@ -164,13 +202,16 @@ export function Home() {
                   type="password"
                   required
                   placeholder="***********"
-                ></input>
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
 
                 <button
                   type="submit"
-                  className="font-bold mt-6 sm:mt-9 mb-6 sm:mb-12 bg-[#3182BD] text-white rounded-4xl py-2.5 px-8 sm:px-16 md:px-24 w-full sm:w-auto mx-auto"
+                  className="font-bold mt-6 sm:mt-9 mb-6 sm:mb-12 bg-[#3182BD] text-white rounded-4xl py-2.5 px-8 sm:px-16 md:px-24 w-full sm:w-auto mx-auto disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
                 >
-                  Entrar
+                  {loading ? "Entrando..." : "Entrar"}
                 </button>
               </form>
 
