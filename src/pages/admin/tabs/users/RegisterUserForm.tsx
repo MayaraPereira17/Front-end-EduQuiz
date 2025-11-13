@@ -217,51 +217,51 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
   };
 
   return (
-    <div className="bg-[#C6DBEF] min-h-full w-full flex justify-center items-start overflow-auto py-11 px-4">
-      <div className="bg-white p-10 min-w-96 rounded-4xl max-w-2xl w-full">
-        <div className="flex gap-5 items-center mb-6">
-          <div className="space-y-2">
-            <h4 className="text-base">Cadastrar Usuário</h4>
-            <span className="text-sm text-[#404040]">
+    <div className="bg-[#C6DBEF] min-h-full w-full flex justify-center items-start overflow-auto py-6 sm:py-8 md:py-11 px-4 sm:px-6">
+      <div className="bg-white p-6 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl md:rounded-4xl max-w-2xl w-full">
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-start sm:items-center mb-4 sm:mb-6">
+          <div className="space-y-1 sm:space-y-2">
+            <h4 className="text-base sm:text-lg md:text-xl font-bold">Cadastrar Usuário</h4>
+            <span className="text-xs sm:text-sm text-[#404040]">
               Preencha os dados para cadastrar um novo usuário
             </span>
           </div>
         </div>
 
         {errors.submit && (
-          <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-lg">
-            <p className="text-red-600 text-sm">{errors.submit}</p>
+          <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-red-100 border border-red-300 rounded-lg">
+            <p className="text-red-600 text-xs sm:text-sm">{errors.submit}</p>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-8">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-6 sm:mt-8">
           {/* Tipo de Usuário */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Tipo de Usuário</label>
+            <label className="text-xs sm:text-sm font-medium">Tipo de Usuário</label>
             <RadioGroup.Root
               value={selectedUserType || undefined}
               onValueChange={(value) => setSelectedUserType(value)}
-              className="space-y-2.5"
+              className="space-y-2 sm:space-y-2.5"
               disabled={loading}
             >
               {userTypes.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div className="flex items-center gap-2.5" key={item.title}>
+                  <div className="flex items-center gap-2 sm:gap-2.5" key={item.title}>
                     <RadioGroup.Item
-                      className="w-5 h-5 border border-gray-300 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-4 h-4 sm:w-5 sm:h-5 border border-gray-300 rounded-full flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-blue-500 flex-shrink-0"
                       value={item.title}
                     >
                       <RadioGroup.Indicator>
-                        <div className="w-3 h-3 bg-blue-500 rounded-full" />
+                        <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full" />
                       </RadioGroup.Indicator>
                     </RadioGroup.Item>
 
-                    <Icon />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
 
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium">{item.title}</span>
-                      <span className="text-[#404040] text-sm">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-xs sm:text-sm font-medium">{item.title}</span>
+                      <span className="text-[#404040] text-xs sm:text-sm">
                         {item.description}
                       </span>
                     </div>
@@ -273,14 +273,14 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
 
           {/* Campos específicos do tipo de usuário */}
           {selectedType && selectedType.fields && (
-            <div className="mt-4 space-y-2">
+            <div className="mt-3 sm:mt-4 space-y-2">
               {selectedType.fields.map((field: any) => (
-                <div className="flex flex-col gap-2" key={field.label}>
-                  <label className="text-sm font-medium">{field.label}</label>
+                <div className="flex flex-col gap-1 sm:gap-2" key={field.label}>
+                  <label className="text-xs sm:text-sm font-medium">{field.label}</label>
                   <input
                     type="text"
                     placeholder={field.placeholder}
-                    className="bg-[#F3F3F5] border border-black/10 py-2.5 rounded-lg px-3 text-sm text-[#717182] w-full"
+                    className="bg-[#F3F3F5] border border-black/10 py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm text-[#717182] w-full"
                     disabled={loading}
                   />
                 </div>
@@ -289,15 +289,15 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
           )}
 
           {/* Nome Completo - dividido em firstName e lastName */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Nome</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="flex flex-col gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm font-medium">Nome</label>
               <input
                 type="text"
                 placeholder="Nome"
                 value={formData.firstName}
                 onChange={(e) => handleInputChange("firstName", e.target.value)}
-                className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 text-sm w-full ${
+                className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm w-full ${
                   errors.firstName ? "border-red-500" : "border-black/10"
                 }`}
                 disabled={loading}
@@ -307,14 +307,14 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
               )}
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Sobrenome</label>
+            <div className="flex flex-col gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm font-medium">Sobrenome</label>
               <input
                 type="text"
                 placeholder="Sobrenome"
                 value={formData.lastName}
                 onChange={(e) => handleInputChange("lastName", e.target.value)}
-                className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 text-sm w-full ${
+                className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm w-full ${
                   errors.lastName ? "border-red-500" : "border-black/10"
                 }`}
                 disabled={loading}
@@ -326,14 +326,14 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
           </div>
 
           {/* Username */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Username</label>
+          <div className="flex flex-col gap-1 sm:gap-2">
+            <label className="text-xs sm:text-sm font-medium">Username</label>
             <input
               type="text"
               placeholder="usuario123"
               value={formData.username}
               onChange={(e) => handleInputChange("username", e.target.value)}
-              className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 text-sm w-full ${
+              className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm w-full ${
                 errors.username ? "border-red-500" : "border-black/10"
               }`}
               disabled={loading}
@@ -344,14 +344,14 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
           </div>
 
           {/* Email */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Email</label>
+          <div className="flex flex-col gap-1 sm:gap-2">
+            <label className="text-xs sm:text-sm font-medium">Email</label>
             <input
               type="email"
               placeholder="seu@email.com"
               value={formData.email}
               onChange={(e) => handleInputChange("email", e.target.value)}
-              className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 text-sm w-full ${
+              className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm w-full ${
                 errors.email ? "border-red-500" : "border-black/10"
               }`}
               disabled={loading}
@@ -362,14 +362,14 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
           </div>
 
           {/* CPF */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">CPF (opcional)</label>
+          <div className="flex flex-col gap-1 sm:gap-2">
+            <label className="text-xs sm:text-sm font-medium">CPF (opcional)</label>
             <input
               type="text"
               placeholder="000.000.000-00"
               value={formData.cpf}
               onChange={(e) => handleInputChange("cpf", e.target.value)}
-              className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 text-sm w-full ${
+              className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm w-full ${
                 errors.cpf ? "border-red-500" : "border-black/10"
               }`}
               disabled={loading}
@@ -380,28 +380,28 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
           </div>
 
           {/* Data de Nascimento */}
-          <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Data de Nascimento (opcional)</label>
+          <div className="flex flex-col gap-1 sm:gap-2">
+            <label className="text-xs sm:text-sm font-medium">Data de Nascimento (opcional)</label>
             <input
               type="date"
               value={formData.dataNascimento}
               onChange={(e) => handleInputChange("dataNascimento", e.target.value)}
-              className="bg-[#F3F3F5] border border-black/10 py-2.5 rounded-lg px-3 text-sm w-full"
+              className="bg-[#F3F3F5] border border-black/10 py-2 sm:py-2.5 rounded-lg px-3 text-xs sm:text-sm w-full"
               disabled={loading}
             />
           </div>
 
           {/* Senhas */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Senha</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="flex flex-col gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm font-medium">Senha</label>
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="*********"
                   value={formData.password}
                   onChange={(e) => handleInputChange("password", e.target.value)}
-                  className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 pr-10 text-sm w-full ${
+                  className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 pr-8 sm:pr-10 text-xs sm:text-sm w-full ${
                     errors.password ? "border-red-500" : "border-black/10"
                   }`}
                   disabled={loading}
@@ -409,10 +409,10 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   disabled={loading}
                 >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showPassword ? <EyeOff className="w-4 h-4 sm:w-4 sm:h-4" /> : <Eye className="w-4 h-4 sm:w-4 sm:h-4" />}
                 </button>
               </div>
               {errors.password && (
@@ -420,15 +420,15 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
               )}
             </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium">Confirmar Senha</label>
+            <div className="flex flex-col gap-1 sm:gap-2">
+              <label className="text-xs sm:text-sm font-medium">Confirmar Senha</label>
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="*********"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className={`bg-[#F3F3F5] border py-2.5 rounded-lg px-3 pr-10 text-sm w-full ${
+                  className={`bg-[#F3F3F5] border py-2 sm:py-2.5 rounded-lg px-3 pr-8 sm:pr-10 text-xs sm:text-sm w-full ${
                     errors.confirmPassword ? "border-red-500" : "border-black/10"
                   }`}
                   disabled={loading}
@@ -436,10 +436,10 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  className="absolute right-2 sm:right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
                   disabled={loading}
                 >
-                  {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4 sm:w-4 sm:h-4" /> : <Eye className="w-4 h-4 sm:w-4 sm:h-4" />}
                 </button>
               </div>
               {errors.confirmPassword && (
@@ -448,11 +448,11 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
             </div>
           </div>
 
-          <div className="flex gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4">
             <button 
               type="submit"
               disabled={loading}
-              className="flex-1 text-white bg-[#3182BD] rounded-4xl py-3 px-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 text-white bg-[#3182BD] rounded-3xl sm:rounded-4xl py-2.5 sm:py-3 px-4 sm:px-2 font-bold disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm md:text-base"
             >
               {loading ? "Cadastrando..." : "Cadastrar Usuário"}
             </button>
@@ -460,7 +460,7 @@ export function RegisterUserForm({ onSuccess, onCancel }: RegisterUserFormProps)
               type="button"
               onClick={onCancel}
               disabled={loading}
-              className="px-6 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm md:text-base w-full sm:w-auto"
             >
               Cancelar
             </button>

@@ -42,9 +42,11 @@ export function AdminLayout() {
         <TabsTrigger value="profile">Perfil</TabsTrigger>
       </Header>
 
-      <div className="flex-1 overflow-auto">
-        {/* Outlet renderiza a tela da rota atual */}
-        <Outlet />
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-auto">
+          {/* Outlet renderiza a tela da rota atual */}
+          <Outlet />
+        </div>
       </div>
     </Tabs.Root>
   );

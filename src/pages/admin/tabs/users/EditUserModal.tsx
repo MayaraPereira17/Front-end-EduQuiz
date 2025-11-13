@@ -76,25 +76,25 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-xl sm:rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
         {/* Header do Modal */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Editar Usuário</h2>
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Editar Usuário</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             disabled={loading}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         {/* Conteúdo do Modal */}
-        <div className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {/* Nome Completo */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Nome Completo *
               </label>
               <input
@@ -102,7 +102,7 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
                 value={formData.nome}
                 onChange={(e) => handleInputChange("nome", e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
                 placeholder="Nome completo"
                 disabled={loading}
               />
@@ -110,7 +110,7 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
 
             {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Email *
               </label>
               <input
@@ -118,7 +118,7 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
                 value={formData.email}
                 onChange={(e) => handleInputChange("email", e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
                 placeholder="seu@email.com"
                 disabled={loading}
               />
@@ -126,7 +126,7 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
 
             {/* Idade */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                 Idade *
               </label>
               <input
@@ -136,7 +136,7 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
                 value={formData.idade}
                 onChange={(e) => handleInputChange("idade", parseInt(e.target.value) || 0)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-xs sm:text-sm"
                 placeholder="Idade"
                 disabled={loading}
               />
@@ -144,40 +144,40 @@ export function EditUserModal({ isOpen, onClose, user, onUserUpdated }: EditUser
 
             {/* Mensagens de Status */}
             {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-red-700 text-sm">{error}</p>
+              <div className="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-red-700 text-xs sm:text-sm">{error}</p>
               </div>
             )}
 
             {success && (
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-green-700 text-sm">Usuário atualizado com sucesso!</p>
+              <div className="p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-700 text-xs sm:text-sm">Usuário atualizado com sucesso!</p>
               </div>
             )}
 
             {/* Botões */}
-            <div className="flex gap-4 pt-6 border-t border-gray-200">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-gray-200">
               <button
                 type="button"
                 onClick={onClose}
                 disabled={loading}
-                className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-xs sm:text-sm md:text-base"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm md:text-base"
               >
                 {loading ? (
                   <>
-                    <div className="animate-spin rounded-full border-2 border-white border-t-transparent w-5 h-5" />
+                    <div className="animate-spin rounded-full border-2 border-white border-t-transparent w-4 h-4 sm:w-5 sm:h-5" />
                     Salvando...
                   </>
                 ) : (
                   <>
-                    <Save className="w-5 h-5" />
+                    <Save className="w-4 h-4 sm:w-5 sm:h-5" />
                     Salvar Alterações
                   </>
                 )}

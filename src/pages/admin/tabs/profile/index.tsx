@@ -58,10 +58,10 @@ export function ProfileAdminPage() {
 
   if (loading) {
     return (
-      <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-4 py-6">
+      <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-4 sm:px-6 py-4 sm:py-6">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-4 animate-pulse"></div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">Carregando perfil...</h3>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-300 rounded-full mx-auto mb-4 animate-pulse"></div>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Carregando perfil...</h3>
         </div>
       </div>
     );
@@ -69,14 +69,14 @@ export function ProfileAdminPage() {
 
   if (error) {
     return (
-      <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-4 py-6">
+      <div className="flex-1 h-full overflow-auto bg-[#EBF1F4] px-4 sm:px-6 py-4 sm:py-6">
         <div className="text-center">
-          <div className="w-16 h-16 bg-red-500 rounded-full mx-auto mb-4"></div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">Erro ao carregar perfil</h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-500 rounded-full mx-auto mb-4"></div>
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">Erro ao carregar perfil</h3>
+          <p className="text-sm sm:text-base text-gray-600 mb-4">{error}</p>
           <button 
             onClick={loadPerfil}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 text-sm sm:text-base"
           >
             Tentar Novamente
           </button>
@@ -88,10 +88,10 @@ export function ProfileAdminPage() {
   return (
     <>
       <ProfileAdmin
-        firstCardIcon={<User width={32} height={32} color="#2B7FFF" />}
+        firstCardIcon={<User className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" color="#2B7FFF" />}
         firstCardValue={perfil?.totalAlunos?.toString() || "0"}
         firstTitleCardValue="Total de Alunos"
-        secondCardIcon={<ChartColumn width={32} height={32} color="#00C950" />}
+        secondCardIcon={<ChartColumn className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" color="#00C950" />}
         secondTitleCardValue={`${perfil?.mediaTurma || 0}%`}
         secondaCardValue="Média da Turma"
         onEditProfile={handleEditProfile}

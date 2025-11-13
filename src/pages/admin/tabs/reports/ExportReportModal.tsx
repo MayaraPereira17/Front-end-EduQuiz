@@ -24,23 +24,23 @@ export function ExportReportModal({ isOpen, onClose, onExport, totalAlunos, load
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md">
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-2xl font-bold">Exportar Relatório</h2>
+      <div className="bg-white rounded-xl sm:rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+          <h2 className="text-xl sm:text-2xl font-bold">Exportar Relatório</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-full"
             disabled={loading}
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Seleção de Formato */}
           <div>
-            <label className="block text-sm font-medium mb-3">Formato</label>
-            <div className="flex gap-4">
+            <label className="block text-xs sm:text-sm font-medium mb-2 sm:mb-3">Formato</label>
+            <div className="flex gap-3 sm:gap-4">
               <label className="flex-1 cursor-pointer">
                 <input
                   type="radio"
@@ -51,13 +51,13 @@ export function ExportReportModal({ isOpen, onClose, onExport, totalAlunos, load
                   className="sr-only"
                   disabled={loading}
                 />
-                <div className={`p-4 border-2 rounded-lg text-center transition-colors ${
+                <div className={`p-3 sm:p-4 border-2 rounded-lg text-center transition-colors ${
                   formato === 'pdf' 
                     ? 'border-blue-600 bg-blue-50' 
                     : 'border-gray-200 hover:border-gray-300'
                 }`}>
-                  <FileText className="w-8 h-8 mx-auto mb-2 text-red-600" />
-                  <span className="font-medium">PDF</span>
+                  <FileText className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 text-red-600" />
+                  <span className="font-medium text-xs sm:text-sm">PDF</span>
                 </div>
               </label>
               <label className="flex-1 cursor-pointer">
@@ -70,13 +70,13 @@ export function ExportReportModal({ isOpen, onClose, onExport, totalAlunos, load
                   className="sr-only"
                   disabled={loading}
                 />
-                <div className={`p-4 border-2 rounded-lg text-center transition-colors ${
+                <div className={`p-3 sm:p-4 border-2 rounded-lg text-center transition-colors ${
                   formato === 'excel' 
                     ? 'border-blue-600 bg-blue-50' 
                     : 'border-gray-200 hover:border-gray-300'
                 }`}>
-                  <FileText className="w-8 h-8 mx-auto mb-2 text-green-600" />
-                  <span className="font-medium">Excel</span>
+                  <FileText className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-1 sm:mb-2 text-green-600" />
+                  <span className="font-medium text-xs sm:text-sm">Excel</span>
                 </div>
               </label>
             </div>
@@ -84,34 +84,34 @@ export function ExportReportModal({ isOpen, onClose, onExport, totalAlunos, load
 
           {/* Quantidade de Alunos */}
           <div>
-            <label className="block text-sm font-medium mb-3">
+            <label className="block text-xs sm:text-sm font-medium mb-2 sm:mb-3">
               Quantidade de Alunos
             </label>
-            <div className="space-y-3">
-              <label className="flex items-center gap-3 cursor-pointer">
+            <div className="space-y-2 sm:space-y-3">
+              <label className="flex items-center gap-2 sm:gap-3 cursor-pointer">
                 <input
                   type="radio"
                   name="quantidade"
                   checked={exportarTodos}
                   onChange={() => setExportarTodos(true)}
-                  className="w-4 h-4"
+                  className="w-4 h-4 flex-shrink-0"
                   disabled={loading}
                 />
-                <span>Exportar todos os alunos ({totalAlunos})</span>
+                <span className="text-xs sm:text-sm">Exportar todos os alunos ({totalAlunos})</span>
               </label>
-              <label className="flex items-center gap-3 cursor-pointer">
+              <label className="flex items-center gap-2 sm:gap-3 cursor-pointer">
                 <input
                   type="radio"
                   name="quantidade"
                   checked={!exportarTodos}
                   onChange={() => setExportarTodos(false)}
-                  className="w-4 h-4"
+                  className="w-4 h-4 flex-shrink-0"
                   disabled={loading}
                 />
-                <span>Exportar quantidade específica</span>
+                <span className="text-xs sm:text-sm">Exportar quantidade específica</span>
               </label>
               {!exportarTodos && (
-                <div className="ml-7">
+                <div className="ml-6 sm:ml-7">
                   <input
                     type="number"
                     min="1"
@@ -119,7 +119,7 @@ export function ExportReportModal({ isOpen, onClose, onExport, totalAlunos, load
                     value={quantidade}
                     onChange={(e) => setQuantidade(e.target.value)}
                     placeholder={`Máximo: ${totalAlunos}`}
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-3 sm:px-4 py-2 border rounded-lg text-xs sm:text-sm"
                     disabled={loading}
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -131,27 +131,27 @@ export function ExportReportModal({ isOpen, onClose, onExport, totalAlunos, load
           </div>
 
           {/* Botões */}
-          <div className="flex gap-4 pt-4 border-t">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-3 sm:pt-4 border-t">
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="flex-1 px-3 sm:px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 text-xs sm:text-sm md:text-base"
             >
               Cancelar
             </button>
             <button
               onClick={handleExport}
               disabled={loading || (!exportarTodos && (!quantidade || parseInt(quantidade) < 1))}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-xs sm:text-sm md:text-base"
             >
               {loading ? (
                 <>
-                  <div className="animate-spin rounded-full border-2 border-white border-t-transparent w-5 h-5" />
+                  <div className="animate-spin rounded-full border-2 border-white border-t-transparent w-4 h-4 sm:w-5 sm:h-5" />
                   Exportando...
                 </>
               ) : (
                 <>
-                  <Download className="w-4 h-4" />
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4" />
                   Exportar
                 </>
               )}

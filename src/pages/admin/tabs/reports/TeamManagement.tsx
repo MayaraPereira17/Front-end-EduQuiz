@@ -87,46 +87,46 @@ export function TeamManagement({ alunos, onRefresh }: TeamManagementProps) {
   };
 
   return (
-    <div className="bg-white p-6 rounded-xl border border-black/10 mb-6">
-      <div className="flex items-center justify-between mb-4">
+    <div className="bg-white p-4 sm:p-5 md:p-6 rounded-xl border border-black/10 mb-4 sm:mb-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 sm:mb-4 gap-3 sm:gap-0">
         <div className="flex items-center gap-2">
-          <Users className="w-5 h-5 text-blue-600" />
-          <h5 className="text-lg font-semibold">Gerenciar Times</h5>
+          <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+          <h5 className="text-base sm:text-lg font-semibold">Gerenciar Times</h5>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-xs sm:text-sm w-full sm:w-auto justify-center"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
           Criar Time
         </button>
       </div>
 
       {times.length === 0 ? (
-        <p className="text-gray-500 text-center py-4">Nenhum time criado ainda</p>
+        <p className="text-gray-500 text-center py-4 text-sm sm:text-base">Nenhum time criado ainda</p>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {times.map((time) => (
-            <div key={time.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <h6 className="font-semibold text-lg">{time.nome}</h6>
-                  <p className="text-sm text-gray-500">
+            <div key={time.id} className="border border-gray-200 rounded-lg p-3 sm:p-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 gap-2 sm:gap-0">
+                <div className="flex-1 min-w-0">
+                  <h6 className="font-semibold text-base sm:text-lg truncate">{time.nome}</h6>
+                  <p className="text-xs sm:text-sm text-gray-500">
                     {time.jogadores.length} jogadores • Criado em {new Date(time.dataCriacao).toLocaleDateString()}
                   </p>
                 </div>
                 <button
                   onClick={() => handleDeleteTeam(time.id)}
-                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                  className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                 {time.jogadores.map((jogador) => (
-                  <div key={jogador.id} className="text-sm bg-blue-50 border border-blue-200 p-2 rounded flex items-center justify-between">
-                    <span className="font-medium text-blue-900">#{jogador.posicao} {jogador.nome}</span>
-                    <span className="text-xs text-blue-600 ml-2">({jogador.scoreGeral}%)</span>
+                  <div key={jogador.id} className="text-xs sm:text-sm bg-blue-50 border border-blue-200 p-2 rounded flex items-center justify-between gap-1">
+                    <span className="font-medium text-blue-900 truncate">#{jogador.posicao} {jogador.nome}</span>
+                    <span className="text-xs text-blue-600 flex-shrink-0">({jogador.scoreGeral}%)</span>
                   </div>
                 ))}
               </div>
@@ -138,47 +138,47 @@ export function TeamManagement({ alunos, onRefresh }: TeamManagementProps) {
       {/* Modal de Criar Time */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b">
-              <h2 className="text-2xl font-bold">Criar Novo Time</h2>
+          <div className="bg-white rounded-xl sm:rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b">
+              <h2 className="text-xl sm:text-2xl font-bold">Criar Novo Time</h2>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-full"
               >
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
 
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
               <div>
-                <label className="block text-sm font-medium mb-2">Nome do Time *</label>
+                <label className="block text-xs sm:text-sm font-medium mb-2">Nome do Time *</label>
                 <input
                   type="text"
                   value={timeNome}
                   onChange={(e) => setTimeNome(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg"
+                  className="w-full px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                   placeholder="Ex: Time Principal"
                 />
               </div>
 
-              <div className="flex gap-4 items-end">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium mb-2">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-end">
+                <div className="flex-1 w-full">
+                  <label className="block text-xs sm:text-sm font-medium mb-2">
                     Selecionar Top N do Ranking
                   </label>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <input
                       type="number"
                       min="1"
                       max={alunos.length}
                       value={quantidadeJogadores}
                       onChange={(e) => setQuantidadeJogadores(parseInt(e.target.value) || 11)}
-                      className="flex-1 px-4 py-2 border rounded-lg"
+                      className="flex-1 px-3 sm:px-4 py-2 border rounded-lg text-sm sm:text-base"
                       placeholder="Quantidade"
                     />
                     <button
                       onClick={handleSelectByQuantity}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap"
+                      className="px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 whitespace-nowrap text-xs sm:text-sm"
                     >
                       Selecionar Top {quantidadeJogadores}
                     </button>
@@ -187,28 +187,28 @@ export function TeamManagement({ alunos, onRefresh }: TeamManagementProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium mb-2">
+                <label className="block text-xs sm:text-sm font-medium mb-2">
                   Jogadores Selecionados ({selectedAlunos.length})
                 </label>
-                <div className="border rounded-lg p-4 max-h-60 overflow-y-auto">
+                <div className="border rounded-lg p-3 sm:p-4 max-h-60 overflow-y-auto">
                   {alunos.length === 0 ? (
-                    <p className="text-gray-500">Nenhum aluno disponível</p>
+                    <p className="text-gray-500 text-sm">Nenhum aluno disponível</p>
                   ) : (
                     <div className="space-y-2">
                       {alunos.map((aluno) => (
                         <label
                           key={aluno.id}
-                          className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer"
+                          className="flex items-center gap-2 sm:gap-3 p-2 hover:bg-gray-50 rounded cursor-pointer"
                         >
                           <input
                             type="checkbox"
                             checked={selectedAlunos.includes(aluno.id)}
                             onChange={() => handleToggleAluno(aluno.id)}
-                            className="w-4 h-4"
+                            className="w-4 h-4 flex-shrink-0"
                           />
-                          <div className="flex-1">
-                            <span className="font-medium">#{aluno.posicao} {aluno.nome}</span>
-                            <span className="text-sm text-gray-500 ml-2">
+                          <div className="flex-1 min-w-0">
+                            <span className="font-medium text-sm sm:text-base">#{aluno.posicao} {aluno.nome}</span>
+                            <span className="text-xs sm:text-sm text-gray-500 ml-2">
                               (Score: {aluno.scoreGeral}%)
                             </span>
                           </div>
@@ -219,17 +219,17 @@ export function TeamManagement({ alunos, onRefresh }: TeamManagementProps) {
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4 border-t">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t">
                 <button
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50 text-sm sm:text-base"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={handleCreateTeam}
                   disabled={loading || !timeNome.trim() || selectedAlunos.length === 0}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                 >
                   {loading ? "Criando..." : "Criar Time"}
                 </button>

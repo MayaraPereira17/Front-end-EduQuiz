@@ -13,18 +13,18 @@ export function TitleWithGoBack({ title, subtitle }: Props) {
   };
 
   return (
-    <div className="my-6 flex items-center gap-4">
+    <div className="my-4 sm:my-6 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
       <button
-        className="border py-1.5 px-3 border-black/10 bg-white flex items-center justify-center gap-2.5 rounded-lg"
+        className="border py-1.5 sm:py-2 px-3 sm:px-4 border-black/10 bg-white flex items-center justify-center gap-2 sm:gap-2.5 rounded-lg hover:bg-gray-50 transition-colors text-xs sm:text-sm"
         onClick={goBack}
       >
-        <img src={ArrowLeftIcon} alt="" />
-        Voltar
+        <img src={ArrowLeftIcon} alt="" className="w-4 h-4 sm:w-5 sm:h-5" />
+        <span>Voltar</span>
       </button>
 
       <div>
-        <h4 className="font-bold text-3xl ">{title}</h4>
-        <span className="text-base text-[#4A5565]">{subtitle}</span>
+        <h4 className="font-bold text-2xl sm:text-3xl md:text-4xl">{title}</h4>
+        <span className="text-sm sm:text-base text-[#4A5565]">{subtitle}</span>
       </div>
     </div>
   );
