@@ -10,7 +10,7 @@ export function CoachLayout() {
   // Define a aba ativa com base na rota
   const activeTab = location.pathname.includes("/coach/profile")
     ? "profile"
-    : location.pathname.includes("/coach/quiz")
+    : location.pathname.includes("/coach/quizz")
     ? "quizz"
     : "home";
 
@@ -33,9 +33,11 @@ export function CoachLayout() {
         <TabsTrigger value="profile">Perfil</TabsTrigger>
       </Header>
 
-      <div className="flex-1 overflow-auto">
-        {/* Outlet renderiza a tela da rota atual */}
-        <Outlet />
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-auto">
+          {/* Outlet renderiza a tela da rota atual */}
+          <Outlet />
+        </div>
       </div>
     </Tabs.Root>
   );

@@ -329,20 +329,20 @@ export function MyQuizzesCoach() {
   }
 
   return (
-    <div className="px-4">
-      <div className="my-6 flex items-center justify-between">
+    <div className="px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="my-4 sm:my-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h4 className="font-bold text-3xl ">Meus Quizzes</h4>
-          <span className="text-base text-[#4A5565]">
+          <h4 className="font-bold text-2xl sm:text-3xl md:text-4xl">Meus Quizzes</h4>
+          <span className="text-sm sm:text-base text-[#4A5565]">
             Gerencie e acompanhe seus quizzes criados
           </span>
         </div>
 
         <button
-          className="flex gap-2.5 items-center justify-center border text-white border-black/10 py-1.5 px-3 rounded-lg text-sm bg-black "
+          className="flex gap-2 sm:gap-2.5 items-center justify-center border text-white border-black/10 py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm bg-black hover:bg-gray-800 transition-colors w-full sm:w-auto"
           onClick={onHandleNewQuizz}
         >
-          <img src={PlusImg} alt="" />
+          <img src={PlusImg} alt="" className="w-4 h-4 sm:w-5 sm:h-5" />
           Novo Quiz
         </button>
       </div>
@@ -352,9 +352,9 @@ export function MyQuizzesCoach() {
         <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg border border-red-200">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-            <p className="text-sm font-medium">Erro</p>
+            <p className="text-xs sm:text-sm font-medium">Erro</p>
           </div>
-          <p className="text-sm mt-1">{error}</p>
+          <p className="text-xs sm:text-sm mt-1">{error}</p>
         </div>
       )}
 
@@ -362,14 +362,14 @@ export function MyQuizzesCoach() {
         <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg border border-green-200">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <p className="text-sm font-medium">Sucesso!</p>
+            <p className="text-xs sm:text-sm font-medium">Sucesso!</p>
           </div>
-          <p className="text-sm mt-1">{success}</p>
+          <p className="text-xs sm:text-sm mt-1">{success}</p>
         </div>
       )}
 
       {/* Sessão input */}
-      <div className="mb-12">
+      <div className="mb-6 sm:mb-8 md:mb-12">
         <div className="relative">
           <SearchInput
             value={searchTerm}
@@ -383,7 +383,7 @@ export function MyQuizzesCoach() {
           )}
         </div>
         {searchTerm && (
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-xs sm:text-sm text-gray-500 mt-2">
             {isSearching ? 'Buscando...' : `Mostrando resultados para "${searchTerm}"`}
           </p>
         )}
@@ -393,24 +393,24 @@ export function MyQuizzesCoach() {
       {!searchTerm && (
         <>
           {/* Estatísticas dos quizzes */}
-      <div className="grid grid-cols-2 gap-3.5 mb-6">
-        <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
-          <img src={bookImg} alt="" />
+      <div className="grid grid-cols-2 gap-3 sm:gap-3.5 mb-4 sm:mb-6">
+        <div className="flex flex-col items-center bg-white border border-black/10 rounded-xl sm:rounded-2xl gap-2 sm:gap-3 md:gap-4 py-4 sm:py-5 md:py-7">
+          <img src={bookImg} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
 
           <div className="flex flex-col text-center">
-                <span className="font-bold text-2xl">{stats.quizzesCriados}</span>
+                <span className="font-bold text-xl sm:text-2xl md:text-3xl">{stats.quizzesCriados}</span>
 
-            <span className="text-[#4A5565] text-base">Total de Quizzes</span>
+            <span className="text-[#4A5565] text-xs sm:text-sm md:text-base">Total de Quizzes</span>
           </div>
         </div>
 
-        <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
-          <img src={checkedImg} alt="" />
+        <div className="flex flex-col items-center bg-white border border-black/10 rounded-xl sm:rounded-2xl gap-2 sm:gap-3 md:gap-4 py-4 sm:py-5 md:py-7">
+          <img src={checkedImg} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
 
           <div className="flex flex-col text-center">
-                <span className="font-bold text-2xl">{stats.totalTentativas}</span>
+                <span className="font-bold text-xl sm:text-2xl md:text-3xl">{stats.totalTentativas}</span>
 
-                <span className="text-[#4A5565] text-base">Total de Tentativas</span>
+                <span className="text-[#4A5565] text-xs sm:text-sm md:text-base">Total de Tentativas</span>
           </div>
         </div>
       </div>
@@ -419,17 +419,17 @@ export function MyQuizzesCoach() {
 
       {/* Cabeçalho específico para busca */}
       {searchTerm && (
-        <div className="mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="font-bold text-2xl">Resultados da Busca</h4>
+        <div className="mb-4 sm:mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-2 gap-2">
+            <h4 className="font-bold text-xl sm:text-2xl">Resultados da Busca</h4>
             <button
               onClick={() => handleSearch('')}
-              className="text-sm text-blue-600 hover:text-blue-800 underline"
+              className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 underline"
             >
               Ver todos os quizzes
             </button>
           </div>
-          <span className="text-base text-[#4A5565]">
+          <span className="text-sm sm:text-base text-[#4A5565]">
             {filteredQuizzes.length} quiz{filteredQuizzes.length !== 1 ? 'zes' : ''} encontrado{filteredQuizzes.length !== 1 ? 's' : ''} para "{searchTerm}"
           </span>
         </div>
@@ -437,28 +437,28 @@ export function MyQuizzesCoach() {
 
       {/* Lista de Quizzes */}
         {filteredQuizzes.length === 0 ? (
-          <div className="text-center py-12">
+          <div className="text-center py-8 sm:py-12">
             <div className="text-gray-500 mb-4">
-              <img src={bookImg} alt="" className="mx-auto mb-4 opacity-50" />
-              <p className="text-lg">
+              <img src={bookImg} alt="" className="mx-auto mb-4 opacity-50 w-12 h-12 sm:w-16 sm:h-16" />
+              <p className="text-base sm:text-lg">
                 {searchTerm ? `Nenhum quiz encontrado para "${searchTerm}"` : 'Nenhum quiz encontrado'}
               </p>
-              <p className="text-sm">
+              <p className="text-xs sm:text-sm mt-2">
                 {searchTerm ? 'Tente ajustar sua busca ou limpar o filtro' : 'Crie seu primeiro quiz!'}
               </p>
             </div>
             {!searchTerm && (
               <button
-                className="flex gap-2.5 items-center justify-center border text-white border-black/10 py-2 px-4 rounded-lg text-sm bg-black mx-auto"
+                className="flex gap-2 sm:gap-2.5 items-center justify-center border text-white border-black/10 py-2 px-4 rounded-lg text-xs sm:text-sm bg-black mx-auto hover:bg-gray-800 transition-colors"
                 onClick={onHandleNewQuizz}
               >
-                <img src={PlusImg} alt="" />
+                <img src={PlusImg} alt="" className="w-4 h-4 sm:w-5 sm:h-5" />
                 Criar Primeiro Quiz
               </button>
             )}
             {searchTerm && (
               <button
-                className="flex gap-2.5 items-center justify-center border text-gray-600 border-gray-300 py-2 px-4 rounded-lg text-sm bg-white mx-auto mt-2"
+                className="flex gap-2 sm:gap-2.5 items-center justify-center border text-gray-600 border-gray-300 py-2 px-4 rounded-lg text-xs sm:text-sm bg-white mx-auto mt-2 hover:bg-gray-50 transition-colors"
                 onClick={() => handleSearch('')}
               >
                 Limpar Busca
@@ -468,11 +468,11 @@ export function MyQuizzesCoach() {
         ) : (
         <>
           {/* Filtro de Status com Segmented Control */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex bg-gray-100 rounded-lg p-1 shadow-sm">
+          <div className="flex justify-center mb-4 sm:mb-6">
+            <div className="inline-flex bg-gray-100 rounded-lg p-1 shadow-sm w-full sm:w-auto">
               <button
                 onClick={() => setStatusFilter('todos')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 ${
                   statusFilter === 'todos'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -482,7 +482,7 @@ export function MyQuizzesCoach() {
               </button>
               <button
                 onClick={() => setStatusFilter('publicados')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 ${
                   statusFilter === 'publicados'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -492,7 +492,7 @@ export function MyQuizzesCoach() {
               </button>
               <button
                 onClick={() => setStatusFilter('despublicados')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+                className={`flex-1 sm:flex-none px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md transition-all duration-200 ${
                   statusFilter === 'despublicados'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -505,18 +505,18 @@ export function MyQuizzesCoach() {
 
           {/* Lista de Quizzes */}
           {filteredQuizzes.length === 0 ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="text-center py-6 sm:py-8">
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-100 rounded-full mx-auto mb-4 flex items-center justify-center">
+                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                 {statusFilter === 'todos' ? 'Nenhum quiz encontrado' : 
                  statusFilter === 'publicados' ? 'Nenhum quiz publicado' : 
                  'Nenhum quiz despublicado'}
               </h3>
-              <p className="text-gray-500">
+              <p className="text-xs sm:text-sm text-gray-500">
                 {statusFilter === 'todos' ? 'Comece criando seu primeiro quiz!' : 
                  statusFilter === 'publicados' ? 'Publique alguns quizzes para vê-los aqui.' : 
                  'Todos os seus quizzes estão publicados.'}
@@ -535,58 +535,58 @@ export function MyQuizzesCoach() {
           console.log('Ativo:', quiz.ativo);
           console.log('isPublished (calculado):', isPublished);
           return (
-          <div key={quiz.id} className="bg-white border border-black/10 px-6 rounded-2xl py-5 !mb-6">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-[#0A0A0A] text-lg">{quiz.titulo}</span>
+          <div key={quiz.id} className="bg-white border border-black/10 px-4 sm:px-5 md:px-6 rounded-xl sm:rounded-2xl py-4 sm:py-5 !mb-4 sm:!mb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 sm:gap-0 mb-2 sm:mb-3">
+              <span className="text-[#0A0A0A] text-base sm:text-lg font-medium break-words flex-1">{quiz.titulo}</span>
 
           <Badge
                 variant={isPublished ? "success" : "default"}
-                className={`gap-1 items-center justify-center ${
+                className={`gap-1 items-center justify-center text-xs sm:text-sm ${
                   quiz.ativo === false ? 'bg-red-100 text-red-700 border-red-200' : ''
                 }`}
-                icon={isPublished ? <img src={checkedSmallImg} /> : undefined}
+                icon={isPublished ? <img src={checkedSmallImg} className="w-3 h-3 sm:w-4 sm:h-4" /> : undefined}
               >
                 {isPublished ? "Publicado" : quiz.ativo === false ? "Desativado" : "Rascunho"}
           </Badge>
         </div>
 
             {quiz.descricao && (
-        <div className="mb-10">
-                <span className="text-[#4A5565] text-sm">
+        <div className="mb-4 sm:mb-6 md:mb-10">
+                <span className="text-[#4A5565] text-xs sm:text-sm break-words">
                   {quiz.descricao}
           </span>
         </div>
             )}
 
-        <div className="space-x-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-3 sm:mb-4">
           <Badge
                 variant={getDifficultyVariant(quiz.dificuldade)}
-            className="gap-1 items-center justify-center"
+            className="gap-1 items-center justify-center text-xs sm:text-sm"
           >
                 {getDifficultyLabel(quiz.dificuldade)}
           </Badge>
         </div>
 
-        <div className="grid grid-cols-3 text-center py-2 mb-2.5">
+        <div className="grid grid-cols-3 text-center py-2 sm:py-3 mb-2 sm:mb-2.5 gap-2">
           <div className="flex flex-col">
-                <span className="font-bold text-base">{quiz.totalQuestoes || quiz.questoes.length}</span>
-            <span className="text-[#4A5565]">Questões</span>
+                <span className="font-bold text-sm sm:text-base md:text-lg">{quiz.totalQuestoes || quiz.questoes.length}</span>
+            <span className="text-[#4A5565] text-xs sm:text-sm">Questões</span>
           </div>
 
           <div className="flex flex-col">
-                <span className="font-bold text-base">{quiz.tempoLimite}min</span>
-            <span className="text-[#4A5565]">Tempo</span>
+                <span className="font-bold text-sm sm:text-base md:text-lg">{quiz.tempoLimite}min</span>
+            <span className="text-[#4A5565] text-xs sm:text-sm">Tempo</span>
           </div>
 
           <div className="flex flex-col">
-                <span className="font-bold text-base">{quiz.totalTentativas || 0}</span>
-            <span className="text-[#4A5565]">Tentativas</span>
+                <span className="font-bold text-sm sm:text-base md:text-lg">{quiz.totalTentativas || 0}</span>
+            <span className="text-[#4A5565] text-xs sm:text-sm">Tentativas</span>
           </div>
         </div>
 
             {quiz.dataCriacao && (
-        <div className="flex items-center gap-2 mb-4">
-          <img src={dateImg} alt="" />
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <img src={dateImg} alt="" className="w-3 h-3 sm:w-4 sm:h-4" />
           <span className="text-[#6A7282] text-xs">
                   Criado em {formatDate(quiz.dataCriacao)}
           </span>
@@ -594,18 +594,18 @@ export function MyQuizzesCoach() {
             )}
 
             <button 
-              className="flex border justify-center w-full border-black/10 gap-2.5 text-sm rounded-lg py-1 mb-2.5"
+              className="flex border justify-center w-full border-black/10 gap-2 sm:gap-2.5 text-xs sm:text-sm rounded-lg py-1.5 sm:py-2 mb-2 sm:mb-2.5 hover:bg-gray-50 transition-colors"
               onClick={() => handleEditQuiz(quiz.id!.toString())}
             >
-          <img src={editImg} alt="" />
+          <img src={editImg} alt="" className="w-4 h-4 sm:w-5 sm:h-5" />
           Editar
         </button>
 
-            <div className="flex justify-between items-center">
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                 {!isPublished && (
                   <button 
-                    className="text-sm px-3 py-1 rounded border border-green-300 text-green-700 hover:bg-green-50 transition-colors"
+                    className="text-xs sm:text-sm px-3 py-1.5 sm:py-2 rounded border border-green-300 text-green-700 hover:bg-green-50 transition-colors w-full sm:w-auto text-center"
                     onClick={() => handleTogglePublish(quiz.id!.toString(), false)}
                     disabled={loading}
                   >
@@ -615,7 +615,7 @@ export function MyQuizzesCoach() {
                 
                 {isPublished && (
                   <button 
-                    className="text-sm px-3 py-1 rounded border border-red-300 text-red-700 hover:bg-red-50 transition-colors"
+                    className="text-xs sm:text-sm px-3 py-1.5 sm:py-2 rounded border border-red-300 text-red-700 hover:bg-red-50 transition-colors w-full sm:w-auto text-center"
                     onClick={() => handleTogglePublish(quiz.id!.toString(), true)}
                     disabled={loading}
                   >

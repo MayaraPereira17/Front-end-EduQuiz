@@ -26,18 +26,18 @@ export function TeacherStats({ item, className }: Props) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center bg-white rounded-4xl py-8 gap-4",
+        "flex flex-col items-center bg-white rounded-2xl sm:rounded-3xl md:rounded-4xl py-4 sm:py-6 md:py-8 gap-2 sm:gap-3 md:gap-4",
         className
       )}
       key={item.description}
     >
       <div>
-        <img src={icons[item.img]} alt="" />
+        <img src={icons[item.img]} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
       </div>
 
-      <div className="flex flex-col gap-1.5 items-center">
-        <span className="font-bold text-3xl">{item.value}</span>
-        <span className="text-sm text-[#404040]">{item.description}</span>
+      <div className="flex flex-col gap-1 sm:gap-1.5 items-center">
+        <span className="font-bold text-xl sm:text-2xl md:text-3xl">{item.value}</span>
+        <span className="text-xs sm:text-sm text-[#404040] text-center px-1">{item.description}</span>
       </div>
     </div>
   );

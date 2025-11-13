@@ -32,25 +32,24 @@ export function Profile({
   }
 
   return (
-    <div className="flex flex-col h-full px-4">
-      <div className="my-6 flex items-center justify-between">
-        <h4 className="font-bold text-3xl ">Meu Perfil</h4>
+    <div className="flex flex-col h-full px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="my-4 sm:my-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <h4 className="font-bold text-2xl sm:text-3xl md:text-4xl">Meu Perfil</h4>
 
-        <button onClick={handleEditProfile} className="flex gap-2.5 items-center justify-center border border-black/10 py-1.5 px-3
-         rounded-lg text-sm bg-white">
-          <Settings width={16} height={16} color="black" />
+        <button onClick={handleEditProfile} className="flex gap-2 sm:gap-2.5 items-center justify-center border border-black/10 py-1.5 sm:py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm bg-white hover:bg-gray-50 transition-colors w-full sm:w-auto">
+          <Settings className="w-4 h-4 sm:w-5 sm:h-5" color="black" />
           Editar Perfil
         </button>
       </div>
 
-      <div className="bg-white flex items-center  p-11 rounded-4xl gap-8">
-        <div>
-          <Avatar className="h-28 w-28" />
+      <div className="bg-white flex flex-col sm:flex-row items-center sm:items-start p-6 sm:p-8 md:p-10 lg:p-11 rounded-2xl sm:rounded-3xl md:rounded-4xl gap-4 sm:gap-6 md:gap-8">
+        <div className="flex-shrink-0">
+          <Avatar className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28" />
         </div>
 
-        <div className="flex flex-col w-full">
-          <div className="flex items-center gap-1 mb-2">
-            <span className="font-bold text-2xl">
+        <div className="flex flex-col w-full text-center sm:text-left">
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-2 sm:gap-1 mb-2">
+            <span className="font-bold text-xl sm:text-2xl md:text-3xl">
               {isTeacher ? "Prof. " : ""}{user?.firstName} {user?.lastName}
             </span>
 
@@ -58,8 +57,8 @@ export function Profile({
               isTeacher && (
               <Badge
                variant="info"
-               icon={<img src={BlueCapIcon} alt="Ícone" />}
-               className="!py-0 px-2 gap-1"
+               icon={<img src={BlueCapIcon} alt="Ícone" className="w-3 h-3 sm:w-4 sm:h-4" />}
+               className="!py-0 px-2 gap-1 text-xs sm:text-sm"
               >
                 Professor
               </Badge>
@@ -69,44 +68,44 @@ export function Profile({
             
           </div>
           <div className="flex flex-col gap-1">
-            <span className="font-normal text-sm text-[#404040]">
+            <span className="font-normal text-xs sm:text-sm text-[#404040] break-words">
               {user?.email}
             </span>
-            <span className="font-normal text-sm text-[#404040]">
+            <span className="font-normal text-xs sm:text-sm text-[#404040]">
               Professor de {user?.materia || "Educação"}
             </span>
-            <span className="font-normal text-sm text-[#404040]">
+            <span className="font-normal text-xs sm:text-sm text-[#404040]">
               {user?.escola || "Instituição de Ensino"}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="mt-7 flex flex-1 flex-col gap-3 ">
-        <div className="border border-black/10 bg-white text-center rounded-2xl">
-          <span>Visão Geral</span>
+      <div className="mt-4 sm:mt-6 md:mt-7 flex flex-1 flex-col gap-3 sm:gap-4">
+        <div className="border border-black/10 bg-white text-center rounded-xl sm:rounded-2xl py-2 sm:py-3">
+          <span className="text-sm sm:text-base font-medium">Visão Geral</span>
         </div>
 
-        <div className="grid grid-cols-2 gap-3.5">
-          <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
+        <div className="grid grid-cols-2 gap-3 sm:gap-3.5">
+          <div className="flex flex-col items-center bg-white border border-black/10 rounded-xl sm:rounded-2xl gap-2 sm:gap-3 md:gap-4 py-4 sm:py-5 md:py-7">
             {firstCardIcon}
 
             <div className="flex flex-col text-center">
-              <span className="font-bold text-2xl">{firstCardValue}</span>
+              <span className="font-bold text-xl sm:text-2xl md:text-3xl">{firstCardValue}</span>
 
-              <span className="text-[#4A5565] text-base">
+              <span className="text-[#4A5565] text-xs sm:text-sm md:text-base">
                 {firstTitleCardValue}
               </span>
             </div>
           </div>
 
-          <div className="flex flex-col items-center bg-white border border-black/10 rounded-2xl gap-4 py-7">
+          <div className="flex flex-col items-center bg-white border border-black/10 rounded-xl sm:rounded-2xl gap-2 sm:gap-3 md:gap-4 py-4 sm:py-5 md:py-7">
             {secondCardIcon}
 
             <div className="flex flex-col text-center">
-              <span className="font-bold text-2xl">{secondaCardValue}</span>
+              <span className="font-bold text-xl sm:text-2xl md:text-3xl">{secondaCardValue}</span>
 
-              <span className="text-[#4A5565] text-base">
+              <span className="text-[#4A5565] text-xs sm:text-sm md:text-base">
                 {secondTitleCardValue}
               </span>
             </div>

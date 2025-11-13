@@ -45,10 +45,10 @@ export function ProfileCoach() {
   return (
     <>
       <Profile
-        firstCardIcon={<BookOpen width={32} height={32} color="#00C950" />}
+        firstCardIcon={<BookOpen className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" color="#00C950" />}
         firstCardValue={loading ? "..." : (stats?.quizzesCriados || 0).toString()}
         firstTitleCardValue="Quizzes Criados"
-        secondCardIcon={<ChartColumn width={32} height={32} color="#F0B100" />}
+        secondCardIcon={<ChartColumn className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" color="#F0B100" />}
         secondTitleCardValue={loading ? "..." : `${stats?.mediaDosAlunos?.toFixed(1) || 0}%`}
         secondaCardValue="Média dos Alunos"
         isTeacher={true}
