@@ -5,6 +5,7 @@ import bookImg from "../../assets/icons/book-blue.svg";
 import starImg from "../../assets/icons/star.svg";
 import type { IconKey } from "../../types/studentRating";
 import { cn } from "../../utils/cn";
+import { Clock } from "lucide-react";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   item: {
@@ -23,6 +24,14 @@ const icons = {
 };
 
 export function StudentStats({ item, className }: Props) {
+  // Renderizar ícone SVG ou componente do lucide-react
+  const renderIcon = () => {
+    if (item.img === "clock") {
+      return <Clock className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-[#3182BD]" />;
+    }
+    return <img src={icons[item.img]} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />;
+  };
+
   return (
     <div
       className={cn(
@@ -32,7 +41,7 @@ export function StudentStats({ item, className }: Props) {
       key={item.description}
     >
       <div>
-        <img src={icons[item.img]} alt="" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
+        {renderIcon()}
       </div>
 
       <div className="flex flex-col gap-1 sm:gap-1.5 items-center">

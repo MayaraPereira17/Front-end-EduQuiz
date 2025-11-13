@@ -64,7 +64,7 @@ export function Home() {
         {/* Quizzes Completos */}
         <StudentStats 
           item={{
-            img: "book" as any,
+            img: "book",
             value: loading ? "..." : (stats?.quizzesCompletos || 0),
             description: "Quizzes completos"
           }} 
@@ -73,7 +73,7 @@ export function Home() {
         {/* Média Geral */}
         <StudentStats 
           item={{
-            img: "analytics" as any,
+            img: "analytics",
             value: loading ? "..." : `${stats?.mediaGeral?.toFixed(1) || 0}%`,
             description: "Média geral"
           }} 
@@ -82,7 +82,7 @@ export function Home() {
                 {/* Total de Pontos */}
                 <StudentStats
                   item={{
-                    img: "star" as any,
+                    img: "star",
                     value: loading ? "..." : (stats?.pontos || 0),
                     description: "Total de pontos"
                   }}
@@ -91,7 +91,7 @@ export function Home() {
                 {/* Sequência de Dias */}
                 <StudentStats
                   item={{
-                    img: "clock" as any,
+                    img: "clock",
                     value: loading ? "..." : `${stats?.sequencia || 0} dias`,
                     description: "Sequência de dias"
                   }}
@@ -100,7 +100,7 @@ export function Home() {
         {/* Posição no Ranking */}
         <StudentStats 
           item={{
-            img: "trophy" as any,
+            img: "trophy",
             value: loading ? "..." : `#${stats?.posicaoRanking || 0}`,
             description: "Posição no ranking"
           }} 
