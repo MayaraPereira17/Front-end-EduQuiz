@@ -3,10 +3,14 @@ import trophyImg from "../../assets/trophy.svg";
 import userImg from "../../assets/user.svg";
 import { LoginForm } from "../../components/login";
 import Logo from "../../components/logo";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 type IconKey = "book" | "trophy" | "user";
 
 export function Login() {
+  const navigate = useNavigate();
+
   const introduction: {
     title: string;
     subtitle: string;
@@ -42,9 +46,20 @@ export function Login() {
 
   return (
     <div className="bg-[#C6DBEF] min-h-screen w-screen">
+      {/* Botão Voltar */}
+      <div className="pt-6 px-6">
+        <button
+          onClick={() => navigate("/")}
+          className="flex items-center gap-2 text-[#202020] hover:text-[#3182BD] transition-colors font-medium"
+        >
+          <ArrowLeft className="w-5 h-5" />
+          <span>Voltar</span>
+        </button>
+      </div>
+
       {/* logo */}
       <Logo
-        containerClass="justify-center pt-11"
+        containerClass="justify-center pt-6"
         imgClass="w-28 h-28"
         textClass="text-5xl font-bold text-[#202020]"
       />
