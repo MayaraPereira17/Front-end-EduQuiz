@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Download, FileText, TrendingUp, UserCheck } from "lucide-react";
-import { DetailsStudent } from "./detailsStudent";
 import { tecnicoService, type RelatorioDesempenhoDTO, type AlunoRankingDTO } from "../../../../services/tecnicoService";
 import { TeamManagement } from "./TeamManagement";
 import { EscalarAlunoModal } from "./EscalarAlunoModal";

@@ -3,8 +3,6 @@ import { cn } from "../../../../utils/cn";
 import { TabsTrigger } from "./trigger";
 import { useState } from "react";
 import { Overview } from "./overview";
-import { RecentActivities } from "./recentActivities";
-import { Performance } from "./performance";
 
 export function Tabs() {
   const [selectedTab, setSelectedTab] = useState("overview");

@@ -40,20 +40,9 @@ export function ProfileAdminPage() {
     setIsEditModalOpen(false);
   };
 
-  const handleProfileUpdated = async (dadosPerfil: {
-    nome: string;
-    sobrenome: string;
-    email: string;
-  }) => {
-    try {
-      console.log('🔍 Atualizando perfil do técnico...', dadosPerfil);
-      const perfilAtualizado = await tecnicoService.updatePerfil(dadosPerfil);
-      setPerfil(perfilAtualizado);
-      console.log('✅ Perfil atualizado com sucesso:', perfilAtualizado);
-    } catch (error: any) {
-      console.error('❌ Erro ao atualizar perfil:', error);
-      throw error; // Re-throw para o modal tratar
-    }
+  const handleProfileUpdated = () => {
+    // Recarregar o perfil após atualização
+    loadPerfil();
   };
 
   if (loading) {

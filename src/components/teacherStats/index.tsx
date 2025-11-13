@@ -3,18 +3,19 @@ import trophyImg from "../../assets/icons/trophy.svg";
 import riseImg from "../../assets/icons/rise.svg";
 import bookImg from "../../assets/icons/book-blue.svg";
 import starImg from "../../assets/icons/star.svg";
-import type { IconKey } from "../../types/studentRating";
 import { cn } from "../../utils/cn";
+
+type TeacherIconKey = "analytics" | "trophy" | "rise" | "book" | "star";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   item: {
     value: string | number;
     description: string;
-    img: IconKey;
+    img: TeacherIconKey;
   };
 }
 
-const icons = {
+const icons: Record<TeacherIconKey, string> = {
   analytics: analyticsImg,
   trophy: trophyImg,
   rise: riseImg,

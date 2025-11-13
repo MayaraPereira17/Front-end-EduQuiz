@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Trophy, Target } from "lucide-react";
+import { Users } from "lucide-react";
 import { useAuth } from "../../../../hooks/userAuth";
 import { tecnicoService, type DashboardTecnicoDTO } from "../../../../services/tecnicoService";
 import { Stats } from "./stats";
