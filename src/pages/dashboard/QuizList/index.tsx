@@ -16,17 +16,10 @@ export function QuizList() {
 
   const loadQuizzes = async (_busca?: string) => {
     try {
-      console.log('🔄 QuizList: Iniciando carregamento de quizzes...');
       setLoading(true);
       setError(null);
       
-      console.log('📡 QuizList: Chamando studentService.getAvailableQuizzes...');
       const quizzesData = await studentService.getAvailableQuizzes();
-      
-      console.log('📊 QuizList: Dados recebidos do serviço:', quizzesData);
-      console.log('📊 QuizList: Tipo dos dados:', typeof quizzesData);
-      console.log('📊 QuizList: É array?', Array.isArray(quizzesData));
-      console.log('📊 QuizList: Quantidade de quizzes:', quizzesData?.length || 0);
       
       // Ajustar para diferentes estruturas de resposta
       let quizzesToSet: StudentQuiz[] = [];
@@ -41,18 +34,11 @@ export function QuizList() {
         }
       }
       
-      console.log('🎯 QuizList: Quizzes para definir no estado:', quizzesToSet);
       setQuizzes(quizzesToSet);
     } catch (error: any) {
-      console.error("❌ QuizList: Erro ao carregar quizzes:", error);
-      console.error("❌ QuizList: Detalhes do erro:", {
-        message: error.message,
-        stack: error.stack
-      });
       setError("Erro ao carregar quizzes disponíveis");
       setQuizzes([]);
     } finally {
-      console.log('✅ QuizList: Finalizando carregamento...');
       setLoading(false);
     }
   };
@@ -101,7 +87,6 @@ export function QuizList() {
   };
 
   useEffect(() => {
-    console.log('🚀 QuizList: Componente montado, carregando quizzes...');
     loadQuizzes();
     
     return () => {
@@ -111,15 +96,6 @@ export function QuizList() {
     };
   }, []);
 
-  // Log do estado dos quizzes
-  useEffect(() => {
-    console.log('📊 QuizList: Estado dos quizzes atualizado:', {
-      quizzes: quizzes,
-      loading: loading,
-      error: error,
-      quantidade: quizzes.length
-    });
-  }, [quizzes, loading, error]);
 
   if (loading) {
     return (

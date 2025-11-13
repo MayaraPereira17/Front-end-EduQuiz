@@ -67,6 +67,7 @@ export interface QuestionAnswerResponse {
   proximaQuestao?: StudentQuestion;
   quizConcluido: boolean;
   resultadoFinal?: QuizResult;
+  progresso?: QuizProgress; // Progresso atualizado do backend (fonte de verdade)
 }
 
 export interface QuizProgress {

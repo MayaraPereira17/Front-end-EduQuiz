@@ -120,15 +120,25 @@ export function QuizAttempt() {
       }
       
     } catch (error: any) {
-      // Tratamento específico para quiz já concluído
+      // Tratamento específico para diferentes tipos de erro
       if (error.response?.status === 400 || error.response?.status === 409) {
-        setError("Este quiz já foi concluído. Você só pode fazer cada quiz uma vez.");
+        const errorMessage = error.response?.data?.message || error.response?.data?.error || "Este quiz já foi concluído. Você só pode fazer cada quiz uma vez.";
+        setError(errorMessage);
         // Redirecionar para a lista de quizzes após 3 segundos
         setTimeout(() => {
           navigate('/dashboard?tab=quiz');
         }, 3000);
+      } else if (error.response?.status === 401 || error.response?.status === 403) {
+        setError("Você não tem permissão para fazer este quiz. Verifique se está logado corretamente.");
+      } else if (error.response?.status === 404) {
+        setError("Quiz não encontrado. Verifique se o quiz ainda está disponível.");
+      } else if (error.response?.status === 500) {
+        setError("Erro interno do servidor. Tente novamente mais tarde.");
+      } else if (!error.response) {
+        setError("Erro de conexão. Verifique sua internet e tente novamente.");
       } else {
-        setError("Erro ao carregar quiz. Tente novamente.");
+        const errorMessage = error.response?.data?.message || error.response?.data?.error || "Erro ao carregar quiz. Tente novamente.";
+        setError(errorMessage);
       }
     } finally {
       setLoading(false);
@@ -201,9 +211,8 @@ export function QuizAttempt() {
         // Verificar se quiz foi concluído
         if (response.quizConcluido) {
           // Quiz concluído - mostrar feedback e aguardar usuário finalizar
-          // ✅ USAR PONTUAÇÃO DO BACKEND (resultadoFinal)
-          // Segundo o GUIA: O backend já calculou tudo, incluindo a pontuação final
-          // NÃO devemos recalcular, apenas usar o valor que vem do backend
+          // ✅ USAR PONTUAÇÃO DO BACKEND (FONTE DE VERDADE)
+          // Prioridade: resultadoFinal > progresso > soma manual
           if (response.resultadoFinal) {
             const resultadoApi = response.resultadoFinal as any;
             const pontuacaoFinalBackend = resultadoApi.pontuacaoFinal || resultadoApi.pontuacaoTotal || 0;
@@ -214,17 +223,25 @@ export function QuizAttempt() {
               pontuacaoAtual: pontuacaoFinalBackend, // Usar valor do backend
               percentualCompleto: 100
             }));
-          } else {
-            // Fallback: somar última resposta se não tiver resultadoFinal
-            const pontosUltimaResposta = response.pontosGanhos; // Usar valor do backend diretamente
-            const pontuacaoAnterior = progresso.pontuacaoAtual;
-            const novaPontuacao = pontuacaoAnterior + pontosUltimaResposta;
-            
-            setProgresso(prev => ({
-              ...prev,
-              pontuacaoAtual: novaPontuacao,
+          } else if (response.progresso) {
+            // Se não tiver resultadoFinal mas tiver progresso, usar progresso
+            setProgresso({
+              ...response.progresso,
               percentualCompleto: 100
-            }));
+            });
+          } else {
+            // Fallback: somar última resposta se não tiver resultadoFinal nem progresso
+            setProgresso(prev => {
+              const pontosUltimaResposta = response.pontosGanhos;
+              const pontuacaoAnterior = prev.pontuacaoAtual;
+              const novaPontuacao = pontuacaoAnterior + pontosUltimaResposta;
+              
+              return {
+                ...prev,
+                pontuacaoAtual: novaPontuacao,
+                percentualCompleto: 100
+              };
+            });
           }
           
           const finalTentativaId = response.resultadoFinal?.tentativaId || tentativaId;
@@ -248,20 +265,13 @@ export function QuizAttempt() {
           
           // Não finalizar automaticamente - usuário deve clicar em "Finalizar Teste"
         } else if (response.proximaQuestao) {
-          // Passar automaticamente para próxima questão após 2 segundos
-          // ✅ USAR PONTUAÇÃO DO BACKEND
-          // Segundo o GUIA: O backend já calculou pontosGanhos corretamente
-          // pontosGanhos = 1 se correto, 0 se incorreto (já vem calculado)
-          
-          setTimeout(() => {
-            setQuestions([response.proximaQuestao!]);
-            setMostrandoFeedback(false);
-            setFeedback(null);
-            setCorrectOptionId(null); // Limpar opção correta para próxima questão
-            setReadyToFinalize(false); // Resetar estado de finalização
-            
-            // ✅ ATUALIZAR PROGRESSO USANDO VALOR DO BACKEND
-            // O backend já retornou pontosGanhos correto (1 ou 0)
+          // ✅ ATUALIZAR PROGRESSO IMEDIATAMENTE (ANTES DO setTimeout)
+          // Isso garante que o estado esteja atualizado quando a próxima questão for exibida
+          if (response.progresso) {
+            // Backend retornou progresso atualizado - usar diretamente (fonte de verdade)
+            setProgresso(response.progresso);
+          } else {
+            // Fallback: calcular manualmente se backend não retornar progresso
             setProgresso(prev => {
               const pontuacaoAnterior = prev.pontuacaoAtual;
               const pontosGanhosBackend = response.pontosGanhos;
@@ -270,10 +280,19 @@ export function QuizAttempt() {
               return {
                 ...prev,
                 questaoAtual: prev.questaoAtual + 1,
-                pontuacaoAtual: novaPontuacao, // Somar valor do backend diretamente
+                pontuacaoAtual: novaPontuacao,
                 percentualCompleto: ((prev.questaoAtual + 1) / prev.totalQuestoes) * 100
               };
             });
+          }
+          
+          // Passar automaticamente para próxima questão após 2 segundos
+          setTimeout(() => {
+            setQuestions([response.proximaQuestao!]);
+            setMostrandoFeedback(false);
+            setFeedback(null);
+            setCorrectOptionId(null); // Limpar opção correta para próxima questão
+            setReadyToFinalize(false); // Resetar estado de finalização
             
             // Reiniciar timer para próxima questão (30 minutos)
             setTimeLeft(30 * 60);

@@ -49,6 +49,7 @@ export function QuizResult() {
       
       // 2. Buscar da API (fonte de verdade)
       const apiResult = await studentService.getQuizResult(parseInt(tentativaId));
+      
       setResult(apiResult);
       
       // Salvar no localStorage para acesso rápido futuro
