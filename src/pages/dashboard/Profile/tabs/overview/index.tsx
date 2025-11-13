@@ -34,9 +34,9 @@ export function Overview() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-4 gap-16">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-8 md:gap-12 lg:gap-16">
         {[...Array(4)].map((_, index) => (
-          <div key={index} className="flex items-center justify-center h-32">
+          <div key={index} className="flex items-center justify-center h-24 sm:h-32">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         ))}
@@ -45,7 +45,7 @@ export function Overview() {
   }
 
   return (
-    <div className="grid grid-cols-4 gap-16">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-8 md:gap-12 lg:gap-16">
       {/* Quizzes Completos */}
       <StudentStats 
         item={{

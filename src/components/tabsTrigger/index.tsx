@@ -16,8 +16,8 @@ export function TabsTrigger({
   return (
     <Tabs.Trigger
       className={cn(
-        "px-5 py-3.5 text-sm font-medium cursor-pointer text-black hover:text-gray-600",
-        "data-[state=active]:text-white data-[state=active]:bg-black data-[state=active]:rounded-2xl",
+        "px-3 sm:px-4 md:px-5 py-2 sm:py-3 md:py-3.5 text-xs sm:text-sm font-medium cursor-pointer text-black hover:text-gray-600 transition-colors",
+        "data-[state=active]:text-white data-[state=active]:bg-black data-[state=active]:rounded-lg sm:data-[state=active]:rounded-xl md:data-[state=active]:rounded-2xl",
         className // caso queira adicionar algo extra
       )}
       {...props}

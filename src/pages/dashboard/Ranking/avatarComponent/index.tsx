@@ -19,12 +19,12 @@ export function Avatar({ className }: Props) {
   return (
     <AvatarRadix.Root
       className={cn(
-        "flex items-center justify-center overflow-hidden select-none w-8 h-8 rounded-full",
+        "flex items-center justify-center overflow-hidden select-none w-7 h-7 sm:w-8 sm:h-8 rounded-full flex-shrink-0",
         className
       )}
     >
       <AvatarRadix.Fallback
-        className="w-full h-full flex items-center justify-center text-white text-[15px] font-medium leading-none rounded-full"
+        className="w-full h-full flex items-center justify-center text-white text-xs sm:text-sm md:text-[15px] font-medium leading-none rounded-full"
         style={{ backgroundColor }}
         delayMs={600}
       >
