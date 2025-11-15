@@ -57,8 +57,7 @@ export function FootballGame() {
   const [goals, setGoals] = useState(0);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [currentRound, setCurrentRound] = useState(0);
+  const currentRoundRef = useRef(0);
   const [currentQuestion, setCurrentQuestion] = useState<Question | null>(null);
   const [canShoot, setCanShoot] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -235,7 +234,7 @@ export function FootballGame() {
   const startGame = useCallback(() => {
     if (!selectedCharacter) return;
     setCurrentScreen('game');
-    setCurrentRound(1);
+    currentRoundRef.current = 1;
     setGoals(0);
     setCorrectAnswers(0);
     setTotalQuestions(0);
@@ -291,18 +290,15 @@ export function FootballGame() {
 
   // Próxima pergunta
   const nextQuestion = useCallback(() => {
-    setCurrentRound(prev => {
-      const nextRound = prev + 1;
-      if (nextRound > MAX_ROUNDS) {
-        endGame();
-        return prev;
-      }
-      resetPositions();
-      setTimeout(() => {
-        generateQuestion();
-      }, 100);
-      return nextRound;
-    });
+    currentRoundRef.current += 1;
+    if (currentRoundRef.current > MAX_ROUNDS) {
+      endGame();
+      return;
+    }
+    resetPositions();
+    setTimeout(() => {
+      generateQuestion();
+    }, 100);
   }, [resetPositions, generateQuestion, endGame]);
 
   // Executar chute
@@ -426,7 +422,7 @@ export function FootballGame() {
 
   // Reiniciar jogo
   const handleRestart = useCallback(() => {
-    setCurrentRound(1);
+    currentRoundRef.current = 1;
     setGoals(0);
     setCorrectAnswers(0);
     setTotalQuestions(0);
