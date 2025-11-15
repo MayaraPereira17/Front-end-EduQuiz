@@ -353,13 +353,23 @@ export function QuizAttempt() {
         respostas: answers
       };
 
-      await studentService.submitQuizAttempt(parseInt(quizId!), attempt);
+      const response = await studentService.submitQuizAttempt(parseInt(quizId!), attempt);
       
       setQuizCompleted(true);
       
-      // Redirecionar para dashboard (aba quiz) após 2 segundos
+      // Obter tentativaId do resultado retornado
+      const resultTentativaId = response.tentativaId || tentativaId;
+      if (resultTentativaId) {
+        setTentativaId(resultTentativaId);
+      }
+      
+      // Redirecionar para tela de resultado após 2 segundos
       setTimeout(() => {
-        navigate('/dashboard?tab=quiz');
+        if (resultTentativaId) {
+          navigate(`/dashboard/quiz/result/${resultTentativaId}`);
+        } else {
+          navigate('/dashboard?tab=quiz');
+        }
       }, 2000);
 
     } catch (error: any) {
@@ -409,11 +419,11 @@ export function QuizAttempt() {
     loadQuiz();
   }, [quizId]); // Resetar quando quizId mudar
 
-  // Redirecionar automaticamente para o dashboard (aba quiz) quando quiz for concluído
+  // Redirecionar para a tela de resultado quando quiz for concluído
   useEffect(() => {
     if (quizCompleted && tentativaId) {
       const timer = setTimeout(() => {
-        navigate('/dashboard?tab=quiz');
+        navigate(`/dashboard/quiz/result/${tentativaId}`);
       }, 2000);
 
       return () => clearTimeout(timer);

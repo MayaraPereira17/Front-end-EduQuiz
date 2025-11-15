@@ -152,34 +152,48 @@ export function QuizResult() {
             </div>
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Quiz Concluído!</h1>
             <h2 className="text-xl text-gray-600 mb-4">Quiz Concluído</h2>
-            <p className={`text-4xl font-bold ${getScoreColor(result.percentualAcerto)}`}>
-              {result.percentualAcerto.toFixed(1)}%
+            <p className={`text-4xl font-bold ${getScoreColor(result.percentualAcerto || 0)}`}>
+              {(result.percentualAcerto || 0).toFixed(1)}%
             </p>
-            <p className="text-gray-600 mt-2">{getScoreMessage(result.percentualAcerto)}</p>
+            <p className="text-gray-600 mt-2">{getScoreMessage(result.percentualAcerto || 0)}</p>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-6 mb-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{result.pontuacaoTotal}</div>
-              <div className="text-sm text-gray-600">de {result.pontuacaoMaxima} pontos</div>
+              <div className="text-2xl font-bold text-blue-600">{result.pontuacaoTotal || 0}</div>
+              <div className="text-sm text-gray-600">de {result.pontuacaoMaxima || 0} pontos</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-600">
-                {result.respostasCorretas}
+                {result.respostasCorretas || 0}
               </div>
               <div className="text-sm text-gray-600">acertos</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-600">
-                {formatTime(result.tempoGasto)}
+                {formatTime(result.tempoGasto || 0)}
               </div>
               <div className="text-sm text-gray-600">tempo gasto</div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center flex-wrap" style={{ zIndex: 1, position: 'relative' }}>
+            <button
+              onClick={() => navigate('/dashboard/football-game')}
+              className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
+              style={{ 
+                display: 'flex',
+                visibility: 'visible',
+                opacity: 1,
+                zIndex: 10,
+                position: 'relative'
+              }}
+            >
+              <span className="text-xl">⚽</span>
+              Jogar
+            </button>
             <button
               onClick={() => navigate('/dashboard?tab=quiz')}
               className="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
@@ -202,7 +216,8 @@ export function QuizResult() {
           <h3 className="text-xl font-bold text-gray-800 mb-6">Detalhes das Respostas</h3>
           
           <div className="space-y-4">
-            {result.respostas.map((resposta, index) => (
+            {result.respostas && Array.isArray(result.respostas) && result.respostas.length > 0 ? (
+              result.respostas.map((resposta, index) => (
               <div key={index} className="border rounded-lg p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -246,11 +261,16 @@ export function QuizResult() {
 
                 <div className="mt-3 flex items-center justify-between">
                   <span className="text-sm text-gray-500">
-                    Pontuação: {resposta.pontos} ponto{resposta.pontos !== 1 ? 's' : ''}
+                    Pontuação: {resposta.pontos || resposta.pontosObtidos || 0} ponto{(resposta.pontos || resposta.pontosObtidos || 0) !== 1 ? 's' : ''}
                   </span>
                 </div>
               </div>
-            ))}
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>Nenhuma resposta detalhada disponível.</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

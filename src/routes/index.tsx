@@ -19,6 +19,7 @@ import { RankingAdmin } from "../pages/admin/tabs/ranking";
 import { UsersAdmin } from "../pages/admin/tabs/users";
 import { QuizAttempt } from "../pages/dashboard/QuizAttempt";
 import { QuizResult } from "../pages/dashboard/QuizResult";
+import { FootballGame } from "../pages/dashboard/FootballGame";
 
 const router = createBrowserRouter([
   {
@@ -58,6 +59,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute allowedRoles={["0"]}>
         <QuizResult />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: "/dashboard/football-game",
+    element: (
+      <ProtectedRoute allowedRoles={["0"]}>
+        <FootballGame />
       </ProtectedRoute>
     ),
   },
